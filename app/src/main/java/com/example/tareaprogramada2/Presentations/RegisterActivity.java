@@ -2,6 +2,7 @@ package com.example.tareaprogramada2.Presentations;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -16,6 +17,12 @@ import java.io.IOException;
 public class RegisterActivity extends AppCompatActivity {
 
     public void registerNewUser(View v){
+
+        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent2 = new Intent(this, EditInfoActivity.class);
+        finish();
+        startActivity(intent);
+        startActivity(intent2);
         /*
         if (!isDataValid()){
             System.out.println("Dude what he fuck?");
