@@ -5,7 +5,12 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 
+import com.example.tareaprogramada2.Presentations.Fragments.FriendsFragment;
+import com.example.tareaprogramada2.Presentations.Fragments.NotificationsFragment;
+import com.example.tareaprogramada2.Presentations.Fragments.ProfileFragment;
+import com.example.tareaprogramada2.Presentations.Fragments.SearchFragment;
 import com.example.tareaprogramada2.Presentations.Fragments.SectionsPageAdapter;
+import com.example.tareaprogramada2.Presentations.Fragments.TimelineFragment;
 import com.example.tareaprogramada2.R;
 import com.google.android.material.tabs.TabLayout;
 
@@ -27,6 +32,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setupViewPager(ViewPager viewPager){
-
+        SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
+        adapter.addFragment(new TimelineFragment(), "Agregar");
+        adapter.addFragment(new ProfileFragment(), "Perfil");
+        adapter.addFragment(new FriendsFragment(), "Amigos");
+        adapter.addFragment(new SearchFragment(), "Buscar");
+        adapter.addFragment(new NotificationsFragment(), "Notificaciones");
+        viewPager.setAdapter(adapter);
     }
 }
