@@ -94,6 +94,7 @@
                 android:layout_weight="0.5"
                 android:ems="10"
                 android:hint="Nombre"
+                android:tag="Nombre"
                 android:inputType="textPersonName" />
 
             <Space
@@ -126,6 +127,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="Apellidos"
+                android:tag="Apellidos"
                 android:inputType="textPersonName" />
 
             <Space
@@ -160,6 +162,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="Correo"
+                android:tag="Correo"
                 android:inputType="textEmailAddress" />
 
             <Space
@@ -193,6 +196,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="Contraseña"
+                android:tag="Contraseña"
                 android:inputType="textPassword" />
 
             <Space
@@ -225,6 +229,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="Confirme contraseña"
+                android:tag="Confirmar contraseña"
                 android:inputType="textPassword" />
 
             <Space

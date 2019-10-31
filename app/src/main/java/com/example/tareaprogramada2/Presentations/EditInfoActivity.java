@@ -7,7 +7,10 @@ import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TableLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.tareaprogramada2.CustomViews.EducationRowView;
 import com.example.tareaprogramada2.Presentations.Fragments.DatePickerFragment;
@@ -60,9 +63,48 @@ public class EditInfoActivity extends AppCompatActivity {
         }
     }
 
-    public void validateData(){
+    public boolean isDataValid(){
+
+        String name = ((EditText) findViewById(R.id.tbox_name)).getText().toString();
+        int errors = 0;
+        if (name.equals("")){
+            Toast.makeText(this, "Debe de ingresar un nombre." , Toast.LENGTH_SHORT ).show();
+            errors++;
+        }
+
+        String lastName = ((EditText) findViewById(R.id.tbox_lastname)).getText().toString();
+        if (lastName.equals("")){
+            Toast.makeText(this, "Debe de ingresar sus apellidos." , Toast.LENGTH_SHORT ).show();
+            errors++;
+        }
+
+        String birthday = ((TextView) findViewById(R.id.txt_birthday)).getText().toString();
+        if (lastName.equals("")){
+            Toast.makeText(this, "Debe de ingresar sus apellidos." , Toast.LENGTH_SHORT ).show();
+            errors++;
+        }
+
+        return errors == 0;
+    }
+
+    public void updateUser(View view){
+        String name = ((EditText) findViewById(R.id.tbox_name)).getText().toString();
+        String birthday = ((TextView) findViewById(R.id.txt_birthday)).getText().toString();
+        String lastName = ((EditText) findViewById(R.id.tbox_lastname)).getText().toString();
+        String email = ((EditText) findViewById(R.id.tbox_email)).getText().toString();
+        String city = ((EditText) findViewById(R.id.tbox_city)).getText().toString();
+        String phone = ((EditText) findViewById(R.id.tbox_phone)).getText().toString();
+        List<String> educationList = new ArrayList<>();
+
+        for (EducationRowView row : educationRows){
+            String education = ((EditText) row.findViewById(R.id.tbox_educationField)).getText().toString();
+            educationList.add(education);
+        }
 
     }
+
+
+
 
     public void showDatePickerDialog(View v){
         DialogFragment newFragment = DatePickerFragment.newInstance(2019, 10,28, R.id.txt_birthday);
