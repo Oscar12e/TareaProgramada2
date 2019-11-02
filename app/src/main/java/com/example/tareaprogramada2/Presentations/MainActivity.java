@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void setupViewPager(ViewPager viewPager){
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
-        adapter.addFragment(new TimelineFragment(), "Agregar");
+        adapter.addFragment(new TimelineFragment(), "Timeline");
         adapter.addFragment(new ProfileFragment(), "Perfil");
         adapter.addFragment(new FriendsFragment(), "Amigos");
         adapter.addFragment(new SearchFragment(), "Buscar");

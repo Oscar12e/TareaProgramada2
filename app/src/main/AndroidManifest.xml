@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.tareaprogramada2">
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 
     <application
         android:allowBackup="true"
@@ -9,6 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Presentations.PublishActivity"></activity>
         <activity android:name=".Presentations.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,8 +20,7 @@
         </activity>
         <activity android:name=".Presentations.EditInfoActivity" />
         <activity android:name=".Presentations.RegisterActivity" />
-        <activity android:name=".Presentations.MainActivity"/>
-
+        <activity android:name=".Presentations.MainActivity" />
     </application>
 
 </manifest>
