@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -17,8 +18,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 
@@ -26,6 +30,7 @@ import static java.util.Arrays.asList;
 public class RegisterActivity extends AppCompatActivity {
     private EditText name, lastname, email, password, passwordConfirm;
     private FirebaseAuth mAuth;
+    private DatabaseReference database;
 
     public boolean isDataValid(){
         int errors = 0;
@@ -58,8 +63,12 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void registerNewUser(View v){
+
+
+
         if (!isDataValid()){
             System.out.println("Solucione todos los errores antes de intentar de nuevo.");
+            acceptUser();
             return;
         }
 
@@ -91,8 +100,22 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void acceptUser(){
 
-        //Crear referencia el usuario en la BD
+        User user = new User(email.getText().toString());
+        user.name = name.getText().toString();
+        user.lastname = lastname.getText().toString();
 
+        System.out.println("Invalid user");
+        String key = database.push().getKey();
+        Map<String, Object> map = user.toMap();
+        if (key != null){
+            database.child(key).setValue(map);
+        } else {
+            database.push().setValue(map);
+        }
+
+        System.out.println("Check the db");
+
+        //Crear referencia el usuario en la BD
         Intent intent = new Intent(this, MainActivity.class);
         Intent intent2 = new Intent(this, EditInfoActivity.class);
         finish();
@@ -115,6 +138,6 @@ public class RegisterActivity extends AppCompatActivity {
         password = findViewById(R.id.tbox_password);
         passwordConfirm = findViewById(R.id.tbox_confirmPass);
         mAuth = FirebaseAuth.getInstance();
-
+        database = FirebaseDatabase.getInstance().getReference("users");
     }
 }
