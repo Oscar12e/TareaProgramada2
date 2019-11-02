@@ -1,6 +1,7 @@
 package com.example.tareaprogramada2.Presentations.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -9,7 +10,10 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
+import com.example.tareaprogramada2.Presentations.MainActivity;
+import com.example.tareaprogramada2.Presentations.PublishActivity;
 import com.example.tareaprogramada2.R;
 
 /**
@@ -65,7 +69,15 @@ public class TimelineFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_timeline, container, false);
+        View myView = inflater.inflate(R.layout.fragment_timeline, container, false);
+        Button postText = myView.findViewById(R.id.btn_text);
+
+        postText.setOnClickListener(view -> {
+            System.out.println("Lets see");
+            Intent intent = new Intent(getContext(), PublishActivity.class);
+            startActivity(intent);
+        });
+        return myView;
     }
 
 }

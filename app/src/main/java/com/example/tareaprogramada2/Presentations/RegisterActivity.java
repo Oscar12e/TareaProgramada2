@@ -68,7 +68,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (!isDataValid()){
             System.out.println("Solucione todos los errores antes de intentar de nuevo.");
-            acceptUser();
+            //acceptUser();
             return;
         }
 

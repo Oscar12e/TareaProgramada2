@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
         if (currentUser != null){
             System.out.println("Email " + currentUser.getEmail());
             setSessionUser(currentUser.getEmail());
-            openMainActivity();
+
         }
     }
 
@@ -70,12 +70,10 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             System.out.println("Valid user");
                             FirebaseUser user = ((AuthResult) task.getResult()).getUser();
+                            setSessionUser(email);
                             openMainActivity();
                         } else {
-                            User user = new User("oscar@correo.com");
-                            System.out.println("Invalid user");
-                            String key = database.child("users").push().getKey();
-                            database.child(key).setValue(user);
+
                         }
                     }
                 });
@@ -92,16 +90,19 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void setSessionUser(String _email){
+        System.out.println("Setting the data");
         DatabaseReference usersReference = database.child("users");
 
-        usersReference.addValueEventListener(new ValueEventListener() {
+        usersReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
+                System.out.println("Other if this");
 
                 for (DataSnapshot ds: dataSnapshot.getChildren()){
                     String dsEmail = ds.child("email").getValue(String.class);
+                    System.out.println("Reading email " + dsEmail);
 
                     if (dsEmail.equals(_email)){
                         System.out.println("Found ya");
@@ -109,6 +110,7 @@ public class LoginActivity extends AppCompatActivity {
                         User user = ds.getValue(User.class);
                         user._key = Id;
                         Session.instance.currentUser = user;
+                        openMainActivity();
                     }
                 }
             }
@@ -116,9 +118,12 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError error) {
                 // Failed to read value
-                Log.w("", "Failed to read value.", error.toException());
+                Log.w("LOGIN", "Failed to read value.", error.toException());
+                System.out.println("LOGIN" + "Failed to read value." + error.toException());
             }
         });
+
+
     }
 
 }
