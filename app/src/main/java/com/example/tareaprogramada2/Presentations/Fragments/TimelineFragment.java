@@ -6,15 +6,23 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.example.tareaprogramada2.Models.Post;
+import com.example.tareaprogramada2.Models.PostAdapter;
 import com.example.tareaprogramada2.Presentations.MainActivity;
 import com.example.tareaprogramada2.Presentations.PublishActivity;
 import com.example.tareaprogramada2.R;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,6 +40,9 @@ public class TimelineFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    protected static final Query teamQuery =
+            FirebaseDatabase.getInstance().getReference("posts");
 
 
     public TimelineFragment() {
@@ -73,11 +84,27 @@ public class TimelineFragment extends Fragment {
         Button postText = myView.findViewById(R.id.btn_text);
 
         postText.setOnClickListener(view -> {
-            System.out.println("Lets see");
             Intent intent = new Intent(getContext(), PublishActivity.class);
             startActivity(intent);
         });
+
+        RecyclerView recyclerView = myView.findViewById(R.id.recyler_timeline);
+        RecyclerView.Adapter adapter = newAdapter();
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+
         return myView;
     }
 
+    protected RecyclerView.Adapter newAdapter() {
+        System.out.println("So, here");
+        FirebaseRecyclerOptions<Post> options =
+                new FirebaseRecyclerOptions.Builder<Post>()
+                        .setQuery(teamQuery, Post.class)
+                        .setLifecycleOwner(this)
+                        .build();
+
+        return new PostAdapter(options);
+    }
 }

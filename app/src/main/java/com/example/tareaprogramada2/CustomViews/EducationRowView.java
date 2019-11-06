@@ -37,7 +37,6 @@ public class EducationRowView extends LinearLayout {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.education_row_view, this);
-        System.out.println("Initilizided");
         setVisibility(VISIBLE);
     }
 

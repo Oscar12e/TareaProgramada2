@@ -4,10 +4,9 @@ import java.util.HashMap;
 
 public class TextContent extends Content {
 
-    public String body;
 
     public TextContent(){
-        type = ContentType.text;
+        super.type = ContentType.text;
     }
 
     public HashMap<String, Object> toMap() {

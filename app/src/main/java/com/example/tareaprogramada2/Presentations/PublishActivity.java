@@ -51,7 +51,7 @@ public class PublishActivity extends AppCompatActivity {
                 System.out.println("No se puede publicar en blanco");
             } else {
                 content.body = bodyData;
-                rawPost.content = content;
+                rawPost.setContent(content);// = content;
                 uploadPost(rawPost);
             }
 
