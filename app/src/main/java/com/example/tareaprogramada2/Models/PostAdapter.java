@@ -28,10 +28,11 @@ public class PostAdapter extends FirebaseRecyclerAdapter<Post, PostHolder> {
         super(options);
     }
 
+    @NonNull
     @Override
-    public PostHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PostHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new PostHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.post_view, parent, false));
+                .inflate(R.layout.item_post, parent, false));
     }
 
     @Override

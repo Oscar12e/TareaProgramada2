@@ -41,7 +41,7 @@ public class PublishActivity extends AppCompatActivity {
     public void buildPost(View view){
         Post rawPost = new Post();
         rawPost.postedBy = Session.instance.currentUser._key;
-        rawPost.postedOn = new Date().toString();
+        rawPost.postedOn = Post.dateFormat.format(new Date());
 
         if (type == ContentType.text){
             TextContent content = new TextContent();
@@ -54,7 +54,6 @@ public class PublishActivity extends AppCompatActivity {
                 rawPost.setContent(content);// = content;
                 uploadPost(rawPost);
             }
-
         }
     }
 

@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TableRow;
 
 import com.example.tareaprogramada2.Models.Post;
 import com.example.tareaprogramada2.Models.PostAdapter;
@@ -81,9 +83,15 @@ public class TimelineFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View myView = inflater.inflate(R.layout.fragment_timeline, container, false);
-        Button postText = myView.findViewById(R.id.btn_text);
+        ImageButton postText = myView.findViewById(R.id.btn_text);
+        TableRow row_publish = myView.findViewById(R.id.row_publish);
 
         postText.setOnClickListener(view -> {
+            Intent intent = new Intent(getContext(), PublishActivity.class);
+            startActivity(intent);
+        });
+
+        row_publish.setOnClickListener(view -> {
             Intent intent = new Intent(getContext(), PublishActivity.class);
             startActivity(intent);
         });

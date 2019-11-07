@@ -76,8 +76,8 @@
                     android:background="?android:selectableItemBackground"
                     android:padding="20dp"
                     app:srcCompat="@drawable/youtube_icon" />
-
             </TableRow>
+
         </LinearLayout>
 
     </TableRow>
