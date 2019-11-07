@@ -22,7 +22,7 @@ public class Post {
     public Content content;
 
     @Exclude
-    public static DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+    public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public Post(){
 
@@ -60,7 +60,8 @@ public class Post {
         Date now = new Date();
         try {
             postedDate = dateFormat.parse(postedOn);
-            long diff = postedDate.getTime() - now.getTime();
+            System.out.println(postedOn);
+            long diff = now.getTime() - postedDate.getTime();
             return parseTime(diff);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -76,13 +77,12 @@ public class Post {
         if (daysDiff > 0) return daysDiff + " dias.";
 
         int hoursDiff = (int) (time / (60 * 60 * 1000) );
-        if (hoursDiff > 0) return daysDiff + " horas.";
+        if (hoursDiff > 0) return hoursDiff + " horas.";
 
         int minutesDiff = (int) (time / (60 * 1000) );
-        if (minutesDiff > 0) return daysDiff + " min.";
+        if (minutesDiff > 0) return minutesDiff + " min.";
 
         int secsDiff = (int) (time / ( 1000) );
         return secsDiff + " seconds.";
-
     }
 }

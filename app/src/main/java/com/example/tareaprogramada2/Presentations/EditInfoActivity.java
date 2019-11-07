@@ -16,6 +16,8 @@ import com.example.tareaprogramada2.CustomViews.EducationRowView;
 import com.example.tareaprogramada2.Presentations.Fragments.DatePickerFragment;
 import com.example.tareaprogramada2.R;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +25,8 @@ public class EditInfoActivity extends AppCompatActivity {
     List<EducationRowView> educationRows;
     TableLayout educationTable;
     int rowsAdded;
+
+    public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,10 +108,10 @@ public class EditInfoActivity extends AppCompatActivity {
     }
 
 
-
-
     public void showDatePickerDialog(View v){
         DialogFragment newFragment = DatePickerFragment.newInstance(2019, 10,28, R.id.txt_birthday);
         newFragment.show(getSupportFragmentManager(), "datePicker");
+
+        //AIzaSyBEhtYHVK9BrgQgkTncrFfCXc1Nkl9LHJw
     }
 }
