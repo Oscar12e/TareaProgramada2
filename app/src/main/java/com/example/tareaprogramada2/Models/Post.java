@@ -54,8 +54,6 @@ public class Post {
 
     @Exclude
     public String dateDifference(){
-        //Date postedDate = new Date(postedOn);
-        //SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
         Date postedDate = null;
         Date now = new Date();
         try {

@@ -1,6 +1,7 @@
 package com.example.tareaprogramada2.Presentations.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -9,7 +10,9 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
+import com.example.tareaprogramada2.Presentations.EditInfoActivity;
 import com.example.tareaprogramada2.R;
 
 /**
@@ -29,6 +32,7 @@ public class ProfileFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String user_id;
     private boolean isOwner;
+    private View root;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -65,7 +69,15 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        root = inflater.inflate(R.layout.fragment_profile, container, false);
+        Button edit = root.findViewById(R.id.btn_edit);
+
+        edit.setOnClickListener(view -> {
+            Intent intent = new Intent(getContext(), EditInfoActivity.class);
+            startActivity(intent);
+        });
+
+        return root;
     }
 
 

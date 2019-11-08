@@ -3,22 +3,37 @@ package com.example.tareaprogramada2.Presentations;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
-import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.tareaprogramada2.CustomViews.EducationRowView;
+import com.example.tareaprogramada2.Data.GlideApp;
+import com.example.tareaprogramada2.Data.MyGlideApp;
 import com.example.tareaprogramada2.Presentations.Fragments.DatePickerFragment;
 import com.example.tareaprogramada2.R;
+import com.google.firebase.database.annotations.Nullable;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class EditInfoActivity extends AppCompatActivity {
@@ -26,14 +41,30 @@ public class EditInfoActivity extends AppCompatActivity {
     TableLayout educationTable;
     int rowsAdded;
 
+    private static final int GALLERY_INTENT = 101;
+    private ImageView profilePicture;
     public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    StorageReference storageReference;// = FirebaseStorage.getInstance().getReference().child("myimage");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_edit_info);
+
+        profilePicture = findViewById(R.id.img_profilePic);
+
         educationRows = new ArrayList<>();
         educationTable = findViewById(R.id.table_education);
-        setContentView(R.layout.activity_edit_info);
+        storageReference = FirebaseStorage.getInstance().getReference("default").child("user_default.png");
+
+        GlideApp.with(this /* context */)
+                .load(storageReference)
+                .into(profilePicture);
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
     }
 
     public void addRow(View view){
@@ -68,7 +99,6 @@ public class EditInfoActivity extends AppCompatActivity {
     }
 
     public boolean isDataValid(){
-
         String name = ((EditText) findViewById(R.id.tbox_name)).getText().toString();
         int errors = 0;
         if (name.equals("")){
@@ -104,14 +134,36 @@ public class EditInfoActivity extends AppCompatActivity {
             String education = ((EditText) row.findViewById(R.id.tbox_educationField)).getText().toString();
             educationList.add(education);
         }
+    }
 
+    public void selectProfilePicture(View view){
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, GALLERY_INTENT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == GALLERY_INTENT && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            profilePicture.setImageURI(uri);
+            System.out.println("Setted");
+        } else {
+            System.out.println("What??");
+        }
     }
 
 
     public void showDatePickerDialog(View v){
-        DialogFragment newFragment = DatePickerFragment.newInstance(2019, 10,28, R.id.txt_birthday);
-        newFragment.show(getSupportFragmentManager(), "datePicker");
+        Date now = new Date();
+        try {
+            now = dateFormat.parse("2019-11-08");
+            DialogFragment newFragment = DatePickerFragment.newInstance(2009, 1,28, R.id.txt_birthday);
+            newFragment.show(getSupportFragmentManager(), "datePicker");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-        //AIzaSyBEhtYHVK9BrgQgkTncrFfCXc1Nkl9LHJw
     }
 }

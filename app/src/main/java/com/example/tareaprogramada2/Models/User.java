@@ -16,7 +16,7 @@ public class User {
 
     public String name = "";
     public String lastname = "";
-    public Image profilePic;
+    public String profilePic;
     public List<String> education = new ArrayList<>();
     public String birthday = "";
     public String phoneNumber = "";
@@ -31,7 +31,7 @@ public class User {
 
         name = (String) values.get("name");
         lastname = (String) values.get("lastname");
-        profilePic = (Image) values.get("profilePic");
+        profilePic = (String) values.get("profilePic");
         education = (List<String>) values.get("education");
         birthday = (String) values.get("birthday");
         phoneNumber = (String) values.get("phoneNumber");
