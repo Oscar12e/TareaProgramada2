@@ -19,6 +19,8 @@ import com.example.tareaprogramada2.Models.Session;
 import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.Presentations.EditInfoActivity;
 import com.example.tareaprogramada2.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -144,11 +146,20 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         root = inflater.inflate(R.layout.fragment_profile, container, false);
-        Button edit = root.findViewById(R.id.btn_edit);
+        Button edit = root.findViewById(R.id.btn_show);
 
         edit.setOnClickListener(view -> {
             Intent intent = new Intent(getContext(), EditInfoActivity.class);
             startActivity(intent);
+        });
+
+        Button logOut = root.findViewById(R.id.btn_logOut);// btn_logOut
+        logOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                getActivity().finish();
+            }
         });
 
         initialize(root);

@@ -2,6 +2,7 @@ package com.example.tareaprogramada2.Presentations;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.tareaprogramada2.Models.Session;
 import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -18,8 +20,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -113,13 +118,51 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         System.out.println("Check the db");
-
         //Crear referencia el usuario en la BD
-        Intent intent = new Intent(this, MainActivity.class);
-        Intent intent2 = new Intent(this, EditInfoActivity.class);
-        finish();
-        startActivity(intent);
-        startActivity(intent2);
+        setSessionUser(user.email);
+
+    }
+
+    public void setSessionUser(String _email) {
+        System.out.println("Setting the data");
+        DatabaseReference usersReference = database.child("users");
+        final Context context = this;
+
+        usersReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                System.out.println("Other if this");
+
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    String dsEmail = ds.child("email").getValue(String.class);
+                    System.out.println("Reading email " + dsEmail);
+
+                    if (dsEmail.equals(_email)) {
+                        System.out.println("Found ya");
+                        String Id = ds.getKey();
+                        User user = ds.getValue(User.class);
+                        user._key = Id;
+                        Session.instance.currentUser = user;
+
+
+                        Intent intent = new Intent(context, MainActivity.class);
+                        Intent intent2 = new Intent(context, EditInfoActivity.class);
+                        finish();
+                        startActivity(intent);
+                        startActivity(intent2);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("LOGIN", "Failed to read value.", error.toException());
+                System.out.println("LOGIN" + "Failed to read value." + error.toException());
+            }
+        });
     }
 
     public void cancel(View v){

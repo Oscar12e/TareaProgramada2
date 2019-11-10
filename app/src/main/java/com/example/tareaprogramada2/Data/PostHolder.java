@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +23,9 @@ public class PostHolder extends RecyclerView.ViewHolder {
 
     TextView username, body, postedAgo, link;
     ImageView photo;
+    ImageButton show;
+    Button edit, delete, close;
+    TableRow menu;
 
 
     public PostHolder(View itemView) {
@@ -38,7 +44,30 @@ public class PostHolder extends RecyclerView.ViewHolder {
         link = view.findViewById(R.id.txt_link);
         photo = view.findViewById(R.id.img_photo);
 
+        menu = view.findViewById(R.id.row_options);
 
+        show = view.findViewById(R.id.btn_show);
+        edit = view.findViewById(R.id.btn_edit);
+        delete = view.findViewById(R.id.btn_delete);
+        close = view.findViewById(R.id.btn_close);
+
+        setupButtons();
+    }
+
+    private void setupButtons(){
+        show.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                menu.setVisibility(View.VISIBLE);
+            }
+        });
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                menu.setVisibility(View.GONE);
+            }
+        });
     }
 
 
@@ -69,5 +98,10 @@ public class PostHolder extends RecyclerView.ViewHolder {
             });
             link.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void cleanView(){
+        link.setVisibility(View.GONE);
+        photo.setVisibility(View.GONE);
     }
 }
