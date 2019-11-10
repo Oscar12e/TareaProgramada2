@@ -24,8 +24,9 @@ public class PostAdapter extends FirebaseRecyclerAdapter<Post, PostHolder> {
      *
      * @param options
      */
-    public PostAdapter(@NonNull FirebaseRecyclerOptions<Post> options) {
+    public PostAdapter(@NonNull FirebaseRecyclerOptions<Post> options, Context context) {
         super(options);
+        this.context = context;
     }
 
     @NonNull
@@ -37,7 +38,7 @@ public class PostAdapter extends FirebaseRecyclerAdapter<Post, PostHolder> {
 
     @Override
     protected void onBindViewHolder(@NonNull PostHolder postHolder, int i, @NonNull Post post) {
-        postHolder.bind(post);
+        postHolder.bind(post, context);
     }
 
 }

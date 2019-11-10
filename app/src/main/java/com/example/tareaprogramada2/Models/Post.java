@@ -49,6 +49,11 @@ public class Post {
         result.put("likedBy", likedBy);
         result.put("dislikedBy", dislikedBy);
         result.put("content", content.toMap());
+        try {
+            result.put("postedTime", 1-dateFormat.parse(postedOn).getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return result;
     }
 
@@ -64,13 +69,12 @@ public class Post {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
 
     @Exclude
-    public String parseTime(long time){
+    private String parseTime(long time){
         int daysDiff = (int) (time / (24 * 60 * 60 * 1000) );
         if (daysDiff > 0) return daysDiff + " dias.";
 

@@ -87,10 +87,16 @@ public class TimelineFragment extends Fragment {
             startActivity(intent);
         });
 
-        row_publish.setOnClickListener(view -> {
-            Intent intent = new Intent(getContext(), PublishActivity.class);
-            startActivity(intent);
-        });
+        if (allowPost){
+            row_publish.setOnClickListener(view -> {
+                Intent intent = new Intent(getContext(), PublishActivity.class);
+                startActivity(intent);
+            });
+            row_publish.setVisibility(View.VISIBLE);
+        } else {
+            row_publish.setVisibility(View.GONE);
+        }
+
 
         RecyclerView recyclerView = myView.findViewById(R.id.recyler_timeline);
         RecyclerView.Adapter adapter = newAdapter();
@@ -105,7 +111,7 @@ public class TimelineFragment extends Fragment {
         Query query;
         ObservableSnapshotArray<Post> t;
         if (postFrom.equals("")){
-            query = FirebaseDatabase.getInstance().getReference("posts");
+            query = FirebaseDatabase.getInstance().getReference("posts").orderByChild("postedTime");
         } else {
             query = FirebaseDatabase.getInstance().getReference("posts").orderByChild("postedBy").equalTo(postFrom);
         }
@@ -116,6 +122,6 @@ public class TimelineFragment extends Fragment {
                         .setLifecycleOwner(this)
                         .build();
 
-        return new PostAdapter(options);
+        return new PostAdapter(options, getContext());
     }
 }

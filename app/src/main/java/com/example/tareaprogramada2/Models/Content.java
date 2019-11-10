@@ -5,9 +5,10 @@ import android.media.Image;
 import java.util.HashMap;
 
 public class Content {
-    ContentType type;
+    public ContentType type;
     public String body;
     public String link;
+    public String videoKey;
     public String imageUrl;
 
     public Content(){
@@ -19,6 +20,7 @@ public class Content {
         result.put("type", type);
         result.put("body", body);
         result.put("link", link);
+        result.put("videoKey", videoKey);
         result.put("image", imageUrl);
         return result;
     }

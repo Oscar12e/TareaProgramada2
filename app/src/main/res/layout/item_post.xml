@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -38,15 +40,25 @@
                 android:text="Hora"
                 android:textColor="@android:color/black" />
 
-            <TextView
-                android:id="@+id/txt_privacy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Privacidad"
-                android:textColor="@android:color/tertiary_text_light" />
-
         </TableRow>
 
+
+        <ImageView
+            android:id="@+id/img_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:maxWidth="512dp"
+            android:maxHeight="512dp"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/txt_link"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:text="TextView"
+            android:textColor="@color/design_default_color_primary" />
 
         <TextView
             android:id="@+id/txt_body"
@@ -87,6 +99,7 @@
             android:layout_height="wrap_content"
 
             android:text="Comentarios" />
+
     </LinearLayout>
 
 </LinearLayout>
