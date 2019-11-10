@@ -64,8 +64,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void registerNewUser(View v){
 
-
-
         if (!isDataValid()){
             System.out.println("Solucione todos los errores antes de intentar de nuevo.");
             //acceptUser();
@@ -100,7 +98,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void acceptUser(){
 
-        User user = new User(email.getText().toString());
+        User user = new User();
+        user.email = email.getText().toString();
         user.name = name.getText().toString();
         user.lastname = lastname.getText().toString();
 

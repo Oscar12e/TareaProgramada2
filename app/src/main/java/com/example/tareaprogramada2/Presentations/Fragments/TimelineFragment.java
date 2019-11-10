@@ -1,8 +1,6 @@
 package com.example.tareaprogramada2.Presentations.Fragments;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -12,17 +10,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TableRow;
 
 import com.example.tareaprogramada2.Models.Post;
 import com.example.tareaprogramada2.Models.PostAdapter;
-import com.example.tareaprogramada2.Presentations.MainActivity;
 import com.example.tareaprogramada2.Presentations.PublishActivity;
 import com.example.tareaprogramada2.R;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.ObservableSnapshotArray;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
@@ -36,12 +32,12 @@ import com.google.firebase.database.Query;
 public class TimelineFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String POST_FROM = "postFrom";
+    private static final String ALLOW_POST = "allowPost";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private boolean allowPost;
+    private String postFrom;
 
     protected static final Query teamQuery =
             FirebaseDatabase.getInstance().getReference("posts");
@@ -60,11 +56,11 @@ public class TimelineFragment extends Fragment {
      * @return A new instance of fragment TimelineFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static TimelineFragment newInstance(String param1, String param2) {
+    public static TimelineFragment newInstance(String param1, boolean param2) {
         TimelineFragment fragment = new TimelineFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(POST_FROM, param1);
+        args.putBoolean(ALLOW_POST, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -73,8 +69,8 @@ public class TimelineFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            postFrom = getArguments().getString(POST_FROM);
+            allowPost = getArguments().getBoolean(ALLOW_POST);
         }
     }
 
@@ -106,10 +102,17 @@ public class TimelineFragment extends Fragment {
     }
 
     protected RecyclerView.Adapter newAdapter() {
-        System.out.println("So, here");
+        Query query;
+        ObservableSnapshotArray<Post> t;
+        if (postFrom.equals("")){
+            query = FirebaseDatabase.getInstance().getReference("posts");
+        } else {
+            query = FirebaseDatabase.getInstance().getReference("posts").orderByChild("postedBy").equalTo(postFrom);
+        }
+
         FirebaseRecyclerOptions<Post> options =
                 new FirebaseRecyclerOptions.Builder<Post>()
-                        .setQuery(teamQuery, Post.class)
+                        .setQuery(query, Post.class)
                         .setLifecycleOwner(this)
                         .build();
 

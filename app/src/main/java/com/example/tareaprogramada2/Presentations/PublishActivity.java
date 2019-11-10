@@ -72,7 +72,6 @@ public class PublishActivity extends AppCompatActivity {
         Intent intent = YouTubeStandalonePlayer.createVideoIntent(this, "AIzaSyBEhtYHVK9BrgQgkTncrFfCXc1Nkl9LHJw", url);
         startActivity(intent);
 
-
         //Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         //startActivity(intent);
     }
@@ -99,6 +98,7 @@ public class PublishActivity extends AppCompatActivity {
 
     public void uploadPost(Post post){
         String key = database.push().getKey();
+        post._key = key;
         Map<String, Object> map = post.toMap();
         if (key != null){
             database.child(key).setValue(map);

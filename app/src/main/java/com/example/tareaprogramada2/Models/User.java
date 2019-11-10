@@ -10,18 +10,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@IgnoreExtraProperties
+
 public class User {
     public String _key = "";
-
     public String name = "";
     public String lastname = "";
-    public String profilePic;
+    public String profilePic = "profile_picture.png";
     public List<String> education = new ArrayList<>();
-    public String birthday = "";
+    public String birthday = "1990-01-01";
     public String phoneNumber = "";
     public String email = "";
-    public String sex = "";
+    public String genre = "";
+    public String city = "";
 
     public User(){
     }
@@ -32,28 +32,27 @@ public class User {
         name = (String) values.get("name");
         lastname = (String) values.get("lastname");
         profilePic = (String) values.get("profilePic");
-        education = (List<String>) values.get("education");
         birthday = (String) values.get("birthday");
         phoneNumber = (String) values.get("phoneNumber");
         email = (String) values.get("email");
-        sex = (String) values.get("sex");
-
+        genre = (String) values.get("genre");
+        city = (String) values.get("city");
+        education = (List<String>) values.get("education");
     }
 
-    public User(String _email){
-        email = _email;
-    }
 
     public HashMap<String, Object> toMap(){
         HashMap<String, Object> result = new HashMap<>();
+        result.put("_key", _key);
         result.put("name", name);
         result.put("lastname", lastname);
         result.put("profilePic", profilePic);
-        result.put("education", education);
+        result.put("city", city);
         result.put("birthday", birthday);
         result.put("phoneNumber", phoneNumber);
         result.put("email", email);
-        result.put("sex", sex);
+        result.put("genre", genre);
+        result.put("education", education);
         return result;
     }
 }

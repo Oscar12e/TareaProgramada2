@@ -5,6 +5,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 
+import com.example.tareaprogramada2.Models.Session;
+import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.Presentations.Fragments.FriendsFragment;
 import com.example.tareaprogramada2.Presentations.Fragments.NotificationsFragment;
 import com.example.tareaprogramada2.Presentations.Fragments.ProfileFragment;
@@ -32,9 +34,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setupViewPager(ViewPager viewPager){
+        User myUser = Session.instance.currentUser;
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
-        adapter.addFragment(new TimelineFragment(), "Timeline");
-        adapter.addFragment(new ProfileFragment(), "Perfil");
+
+        adapter.addFragment(TimelineFragment.newInstance("", true), "Timeline");
+        adapter.addFragment(ProfileFragment.newInstance(myUser._key, true), "Profile");
         adapter.addFragment(new FriendsFragment(), "Amigos");
         adapter.addFragment(new SearchFragment(), "Buscar");
         adapter.addFragment(new NotificationsFragment(), "Notificaciones");

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class Post {
+    public String _key;
     public String postedBy;
     public String postedOn;
 
@@ -42,13 +43,12 @@ public class Post {
 
     public HashMap<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-
+        result.put("_key", _key);
         result.put("postedBy", postedBy);
         result.put("postedOn", postedOn);
         result.put("likedBy", likedBy);
         result.put("dislikedBy", dislikedBy);
         result.put("content", content.toMap());
-
         return result;
     }
 

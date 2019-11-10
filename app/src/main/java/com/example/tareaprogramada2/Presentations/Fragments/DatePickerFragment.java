@@ -90,7 +90,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
         System.out.println( year + " " + month + " " + day);
 
-        return new DatePickerDialog(getActivity(),android.R.style.Theme_Holo_Dialog, this, year, month+1, day);
+        return new DatePickerDialog(getActivity(),android.R.style.Theme_Holo_Dialog, this, year, month, day);
     }
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
@@ -108,9 +108,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         c.set(Calendar.MONTH, month);
         c.set(Calendar.DAY_OF_MONTH, day);
 
-        String dateString = DateFormat.getDateInstance(DateFormat.DATE_FIELD).format(c.getTime());
+        String dateString = dateFormat.format(c.getTime());
         txt.setText(dateString);
     }
-
-
 }
