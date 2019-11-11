@@ -21,7 +21,7 @@ public class Content {
         result.put("body", body);
         result.put("link", link);
         result.put("videoKey", videoKey);
-        result.put("image", imageUrl);
+        result.put("imageUrl", imageUrl);
         return result;
     }
 }

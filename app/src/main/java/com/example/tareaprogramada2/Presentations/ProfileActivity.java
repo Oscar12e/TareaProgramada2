@@ -29,22 +29,10 @@ public class ProfileActivity extends AppCompatActivity {
         String userKey = getIntent().getStringExtra("USER_KEY");
 
         LinearLayout root = findViewById(R.id.layout_root);
-
         ViewPager viewPager = findViewById(R.id.pages_default);
 
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
-
         adapter.addFragment(ProfileFragment.newInstance(userKey, false), "Profile");
-
-        viewPager.setAdapter(adapter);
-    }
-
-    public void setupViewPager(ViewPager viewPager){
-        User myUser = Session.instance.currentUser;
-        SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
-
-       // adapter.addFragment(ProfileFragment.newInstance(userKey, false), "Profile");
-
         viewPager.setAdapter(adapter);
     }
 }

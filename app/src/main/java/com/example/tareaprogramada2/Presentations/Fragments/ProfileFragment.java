@@ -12,16 +12,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.tareaprogramada2.Data.GlideApp;
+import com.example.tareaprogramada2.Models.FriendshipRequest;
+import com.example.tareaprogramada2.Models.Post;
 import com.example.tareaprogramada2.Models.Session;
 import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.Presentations.EditInfoActivity;
 import com.example.tareaprogramada2.Presentations.LoginActivity;
 import com.example.tareaprogramada2.R;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,6 +31,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,10 +56,13 @@ public class ProfileFragment extends Fragment {
 
     private StorageReference storageReference;
     private DatabaseReference database;
-    private User userOwner;
+    private User profileOwner;
 
     private ImageView profilePicture;
-    private TextView name;
+    private TextView name, message;
+    private Button edit, logOut, sendRequest, removeFriend;
+    private LinearLayout configLayout;
+
 
     public SectionsPageAdapter pagesAdapter;
 
@@ -77,7 +85,7 @@ public class ProfileFragment extends Fragment {
 
 
         args.putString(USER_ID, param1);
-        args.putBoolean(IS_OWNWER, param2);
+        args.putBoolean(IS_OWNWER, param1.equals(Session.instance.currentUser._key));
 
         fragment.setArguments(args);
         return fragment;
@@ -94,21 +102,81 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    private void showOwnerWidgets(){
+        configLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void visitingProfile(){
+        configLayout.setVisibility(View.GONE);
+        removeFriend.setVisibility(View.GONE);
+        sendRequest.setVisibility(View.GONE);
+        message.setVisibility(View.GONE);
+
+        User myUser = Session.instance.currentUser;
+        if (myUser.friends.contains(profileOwner._key)){
+            removeFriend.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        database = FirebaseDatabase.getInstance().getReference("request");
+        database.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                    FriendshipRequest request = ds.getValue(FriendshipRequest.class);
+                    if (request.sender.equals(myUser._key) && request.receiver.equals(profileOwner._key)){
+                        message.setText("Solicitud de amistad enviada.");
+                        message.setVisibility(View.VISIBLE);
+                        return;
+                    } else if (request.receiver.equals(myUser._key) && request.sender.equals(profileOwner._key)){
+                        message.setText("Para aceptar la solicitud vaya a la ventana de notificaciones.");
+                        message.setVisibility(View.VISIBLE);
+                        return;
+                    }
+                }
+
+                sendRequest.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("LOGIN", "Failed to read value.", error.toException());
+                System.out.println("LOGIN" + "Failed to read value." + error.toException());
+            }
+        });
+
+        // querying to know if request sent
+    }
+
     public void initialize(View view){
+        profilePicture = view.findViewById(R.id.img_profilePic);
+        name = view.findViewById(R.id.txt_username);
+
+        message = view.findViewById(R.id.txt_message);
+        sendRequest = view.findViewById(R.id.btn_sendFriendship);
+        removeFriend = view.findViewById(R.id.btn_remove);
+        edit = root.findViewById(R.id.btn_edit);
+        logOut = root.findViewById(R.id.btn_logOut);// btn_logOut
+        configLayout = view.findViewById(R.id.layout_config);
+
 
         if (this.isOwner){
-            initialize(Session.instance.currentUser, view);
+            setupComponents(Session.instance.currentUser, view);
+            showOwnerWidgets();
         } else {
-            System.out.println(user_id);
             DatabaseReference usersReference = FirebaseDatabase.getInstance().getReference("users").child(user_id);
             usersReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     // This method is called once with the initial value and again
                     // whenever data at this location is updated.
-
                     User myUser = dataSnapshot.getValue(User.class);
-                    initialize(myUser, view);
+                    setupComponents(myUser, view);
+                    visitingProfile();
                 }
 
                 @Override
@@ -122,11 +190,15 @@ public class ProfileFragment extends Fragment {
 
     }
 
-    public void initialize(User myUser, View view) {
-        userOwner = myUser;
-        storageReference = FirebaseStorage.getInstance().getReference(myUser._key).child(myUser.profilePic);
-        profilePicture = view.findViewById(R.id.img_profilePic);
-        name = view.findViewById(R.id.txt_username);
+    public void setupComponents(User myUser, View view) {
+        profileOwner = myUser;
+
+        if (!profileOwner.profilePic.equals("")){
+            storageReference = FirebaseStorage.getInstance().getReference(profileOwner._key).child(profileOwner.profilePic);
+        } else {
+            storageReference = FirebaseStorage.getInstance().getReference("default").child("user_default.png");
+        }
+
 
         GlideApp.with(this /* context */)
                 .load(storageReference)
@@ -134,31 +206,12 @@ public class ProfileFragment extends Fragment {
 
         name.setText(myUser.name + " " + myUser.lastname);
         setupViewPager(view, null);
-    }
 
-    public void setupViewPager(View view, ViewPager viewPage){
-        SectionsPageAdapter adapter = new SectionsPageAdapter(getFragmentManager());
-        ViewPager viewPager = view.findViewById(R.id.pages_profile);
-
-        adapter.addFragment(TimelineFragment.newInstance(userOwner._key, false), "Timeline");
-        viewPager.setAdapter(adapter);
-    }
-
-
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        root = inflater.inflate(R.layout.fragment_profile, container, false);
-        Button edit = root.findViewById(R.id.btn_show);
-
-        edit.setOnClickListener(view -> {
+        edit.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), EditInfoActivity.class);
             startActivity(intent);
         });
 
-        Button logOut = root.findViewById(R.id.btn_logOut);// btn_logOut
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -169,9 +222,46 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        sendRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendFriendshipRequest();
+            }
+        });
+
+    }
+
+    public void setupViewPager(View view, ViewPager viewPage){
+        SectionsPageAdapter adapter = new SectionsPageAdapter(getFragmentManager());
+        ViewPager viewPager = view.findViewById(R.id.pages_profile);
+
+        adapter.addFragment(TimelineFragment.newInstance(profileOwner._key, false), "Timeline");
+        viewPager.setAdapter(adapter);
+    }
+
+    private void sendFriendshipRequest(){
+        User myUser = Session.instance.currentUser;
+        FriendshipRequest request = new FriendshipRequest();
+        request.sender = myUser._key;
+        request.receiver = profileOwner._key;
+
+        database = FirebaseDatabase.getInstance().getReference("request");
+        String key = database.push().getKey();
+        request._key = key;
+        Map<String, Object> map = request.toMap();
+        database.push().setValue(map);
+        //So, this should make a difference
+        message.setText("¡Solicitud enviada!");
+        sendRequest.setVisibility(View.GONE);
+        message.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        root = inflater.inflate(R.layout.fragment_profile, container, false);
         initialize(root);
         return root;
     }
-
-
 }

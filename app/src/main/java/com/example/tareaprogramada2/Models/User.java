@@ -15,13 +15,14 @@ public class User {
     public String _key = "";
     public String name = "";
     public String lastname = "";
-    public String profilePic = "profile_picture.png";
+    public String profilePic = "";
     public List<String> education = new ArrayList<>();
     public String birthday = "1990-01-01";
     public String phoneNumber = "";
     public String email = "";
     public String genre = "";
     public String city = "";
+    public List<String> friends = new ArrayList<>();;
 
     public User(){
     }
@@ -38,6 +39,7 @@ public class User {
         genre = (String) values.get("genre");
         city = (String) values.get("city");
         education = (List<String>) values.get("education");
+        friends = (List<String>) values.get("friends");
     }
 
 

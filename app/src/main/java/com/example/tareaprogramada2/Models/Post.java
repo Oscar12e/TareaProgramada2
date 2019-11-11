@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +18,8 @@ public class Post {
     public String postedBy;
     public String postedOn;
 
-    public List<User> likedBy;
-    public List<User> dislikedBy;
+    public List<String> likedBy = new ArrayList<>();
+    public List<String> dislikedBy = new ArrayList<>();
 
     public Content content;
 
@@ -29,7 +30,7 @@ public class Post {
 
     }
 
-    public Post(String postedBy, String postedOn, List<User> likedBy, List<User> dislikedBy, Content content) {
+    public Post(String postedBy, String postedOn, List<String> likedBy, List<String> dislikedBy, Content content) {
         this.postedBy = postedBy;
         this.postedOn = postedOn;
         this.likedBy = likedBy;
@@ -87,4 +88,39 @@ public class Post {
         int secsDiff = (int) (time / ( 1000) );
         return secsDiff + " seconds.";
     }
+
+    @Exclude
+    public void registerLike(String user_key){
+        if (!removeVote(user_key, likedBy)){
+            changeVote(user_key, dislikedBy);
+            likedBy.add(user_key);
+        }
+
+    }
+    @Exclude
+    public void registerDislike(String user_key){
+        if (!removeVote(user_key, dislikedBy)){
+            changeVote(user_key, likedBy);
+            dislikedBy.add(user_key);
+        }
+    }
+
+    @Exclude
+    //Return if removed
+    private boolean removeVote(String user_key, List<String> votesList){
+        if (!votesList.contains(user_key)) return false;
+
+        votesList.remove(user_key);
+        return true;
+    }
+
+    @Exclude
+    //Return if removed
+    private boolean changeVote(String user_key, List<String> votesList){
+        if (!votesList.contains(user_key)) return false;
+
+        votesList.remove(user_key);
+        return true;
+    }
+
 }
