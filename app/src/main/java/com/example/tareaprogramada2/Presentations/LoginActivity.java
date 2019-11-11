@@ -71,7 +71,6 @@ public class LoginActivity extends AppCompatActivity {
                             System.out.println("Valid user");
                             FirebaseUser user = ((AuthResult) task.getResult()).getUser();
                             setSessionUser(email);
-                            openMainActivity();
                         } else {
 
                         }

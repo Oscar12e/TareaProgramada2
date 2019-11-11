@@ -18,6 +18,7 @@ import com.example.tareaprogramada2.Data.GlideApp;
 import com.example.tareaprogramada2.Models.Session;
 import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.Presentations.EditInfoActivity;
+import com.example.tareaprogramada2.Presentations.LoginActivity;
 import com.example.tareaprogramada2.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -50,6 +51,7 @@ public class ProfileFragment extends Fragment {
 
     private StorageReference storageReference;
     private DatabaseReference database;
+    private User userOwner;
 
     private ImageView profilePicture;
     private TextView name;
@@ -72,6 +74,7 @@ public class ProfileFragment extends Fragment {
     public static ProfileFragment newInstance(String param1, boolean param2) {
         ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
+
 
         args.putString(USER_ID, param1);
         args.putBoolean(IS_OWNWER, param2);
@@ -96,12 +99,14 @@ public class ProfileFragment extends Fragment {
         if (this.isOwner){
             initialize(Session.instance.currentUser, view);
         } else {
+            System.out.println(user_id);
             DatabaseReference usersReference = FirebaseDatabase.getInstance().getReference("users").child(user_id);
             usersReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     // This method is called once with the initial value and again
                     // whenever data at this location is updated.
+
                     User myUser = dataSnapshot.getValue(User.class);
                     initialize(myUser, view);
                 }
@@ -118,6 +123,7 @@ public class ProfileFragment extends Fragment {
     }
 
     public void initialize(User myUser, View view) {
+        userOwner = myUser;
         storageReference = FirebaseStorage.getInstance().getReference(myUser._key).child(myUser.profilePic);
         profilePicture = view.findViewById(R.id.img_profilePic);
         name = view.findViewById(R.id.txt_username);
@@ -131,11 +137,10 @@ public class ProfileFragment extends Fragment {
     }
 
     public void setupViewPager(View view, ViewPager viewPage){
-        User myUser = Session.instance.currentUser;
         SectionsPageAdapter adapter = new SectionsPageAdapter(getFragmentManager());
         ViewPager viewPager = view.findViewById(R.id.pages_profile);
 
-        adapter.addFragment(TimelineFragment.newInstance(myUser._key, false), "Timeline");
+        adapter.addFragment(TimelineFragment.newInstance(userOwner._key, false), "Timeline");
         viewPager.setAdapter(adapter);
     }
 
@@ -158,7 +163,9 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 FirebaseAuth.getInstance().signOut();
-                getActivity().finish();
+                Intent intent = new Intent(getContext(), LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
             }
         });
 

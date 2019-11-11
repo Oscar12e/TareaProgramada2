@@ -3,6 +3,7 @@ package com.example.tareaprogramada2.Data;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -15,14 +16,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tareaprogramada2.Models.ContentType;
 import com.example.tareaprogramada2.Models.Post;
+import com.example.tareaprogramada2.Models.Session;
+import com.example.tareaprogramada2.Models.User;
+import com.example.tareaprogramada2.Presentations.ProfileActivity;
 import com.example.tareaprogramada2.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 public class PostHolder extends RecyclerView.ViewHolder {
 
     TextView username, body, postedAgo, link;
-    ImageView photo;
+    ImageView photo, profilePic;
     ImageButton show;
     Button edit, delete, close;
     TableRow menu;
@@ -43,6 +52,7 @@ public class PostHolder extends RecyclerView.ViewHolder {
         postedAgo = view.findViewById(R.id.txt_postedAt);
         link = view.findViewById(R.id.txt_link);
         photo = view.findViewById(R.id.img_photo);
+        profilePic = view.findViewById(R.id.img_profilePic);
 
         menu = view.findViewById(R.id.row_options);
 
@@ -72,11 +82,7 @@ public class PostHolder extends RecyclerView.ViewHolder {
 
 
     public void bind(Post post, Context context){
-        link.setVisibility(View.GONE);
-        photo.setVisibility(View.GONE);
-
-        System.out.println("Welp, here we are");
-
+        cleanView(context);
         body.setText( post.content.body);
         postedAgo.setText( post.dateDifference());
 
@@ -85,8 +91,8 @@ public class PostHolder extends RecyclerView.ViewHolder {
             GlideApp.with(context /* context */)
                     .load(storageReference)
                     .into(photo);
-
             photo.setVisibility(View.VISIBLE);
+
         } else if (post.content.type == ContentType.youtube){
             link.setText(post.content.link);
             link.setOnClickListener(new View.OnClickListener() {
@@ -98,10 +104,87 @@ public class PostHolder extends RecyclerView.ViewHolder {
             });
             link.setVisibility(View.VISIBLE);
         }
+
+        if (post.postedBy.equals(Session.instance.currentUser._key)){
+            setupUser(post, Session.instance.currentUser, context);
+        } else {
+            DatabaseReference usersReference = FirebaseDatabase.getInstance().getReference("users").child(post.postedBy);
+            usersReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // This method is called once with the initial value and again
+                    // whenever data at this location is updated.
+
+                    User myUser = dataSnapshot.getValue(User.class);
+                    setupUser(post, myUser, context);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+                    Log.w("LOGIN", "Failed to read value.", error.toException());
+                    System.out.println("LOGIN" + "Failed to read value." + error.toException());
+                }
+            });
+        }
     }
 
-    private void cleanView(){
+
+    private void cleanView(Context context){
         link.setVisibility(View.GONE);
         photo.setVisibility(View.GONE);
+        menu.setVisibility(View.GONE);
+        show.setVisibility(View.GONE);
+
+        username.setClickable(false);
+        profilePic.setClickable(false);
+
     }
+
+    public void setupUser(Post post, User user, Context context) {
+        User myUser = Session.instance.currentUser;
+        String fullName =  user.name + " " + user.lastname;
+        if (post.postedBy.equals(myUser._key)){
+            show.setVisibility(View.VISIBLE);
+            //Set the buttons here
+        } else {
+            username.setClickable(true);
+            profilePic.setClickable(true);
+
+            username.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openProfile(post, context, fullName);
+                }
+            });
+            profilePic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openProfile(post, context, fullName);
+                }
+            });
+        }
+
+        username.setText(fullName);
+        if (!user.profilePic.equals("")){
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference(user._key).child(user.profilePic);
+            GlideApp.with(context /* context */)
+                    .load(storageReference)
+                    .circleCrop()
+                    .into(profilePic);
+        } else {
+            profilePic.setImageDrawable( context.getDrawable(R.drawable.user_default));
+        }
+
+    }
+
+    public void openProfile(Post post, Context context, String name){
+        Intent intent = new Intent(context, ProfileActivity.class);
+        intent.putExtra("USER_KEY", post.postedBy);
+        intent.putExtra("USER_NAME", name);
+
+        System.out.println("Storing");
+        context.startActivity(intent);
+    }
+
 }

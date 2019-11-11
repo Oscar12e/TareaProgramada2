@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Presentations.PublishActivity"></activity>
+        <activity android:name=".Presentations.ProfileActivity"></activity>
+        <activity android:name=".Presentations.PublishActivity" />
         <activity android:name=".Presentations.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

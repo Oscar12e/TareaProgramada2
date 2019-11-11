@@ -102,14 +102,14 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void acceptUser(){
-
         User user = new User();
         user.email = email.getText().toString();
         user.name = name.getText().toString();
         user.lastname = lastname.getText().toString();
 
-        System.out.println("Invalid user");
+
         String key = database.push().getKey();
+        user._key = key;
         Map<String, Object> map = user.toMap();
         if (key != null){
             database.child(key).setValue(map);
