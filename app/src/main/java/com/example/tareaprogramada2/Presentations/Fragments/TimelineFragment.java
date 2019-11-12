@@ -39,9 +39,6 @@ public class TimelineFragment extends Fragment {
     private boolean allowPost;
     private String postFrom;
 
-    protected static final Query teamQuery =
-            FirebaseDatabase.getInstance().getReference("posts");
-
 
     public TimelineFragment() {
         // Required empty public constructor
@@ -79,6 +76,11 @@ public class TimelineFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View myView = inflater.inflate(R.layout.fragment_timeline, container, false);
+
+        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        System.out.println("OnCreate Timeline Fragment");
+        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
         ImageButton postText = myView.findViewById(R.id.btn_text);
         TableRow row_publish = myView.findViewById(R.id.row_publish);
 
@@ -103,13 +105,15 @@ public class TimelineFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-
         return myView;
     }
 
     protected RecyclerView.Adapter newAdapter() {
         Query query;
-        ObservableSnapshotArray<Post> t;
+        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        System.out.println("Timeline fragment new adapter");
+        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
         if (postFrom.equals("")){
             query = FirebaseDatabase.getInstance().getReference("posts").orderByChild("postedTime");
         } else {

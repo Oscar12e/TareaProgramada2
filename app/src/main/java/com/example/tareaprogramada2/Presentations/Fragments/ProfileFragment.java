@@ -1,9 +1,12 @@
 package com.example.tareaprogramada2.Presentations.Fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.util.Log;
@@ -23,6 +26,7 @@ import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.Presentations.EditInfoActivity;
 import com.example.tareaprogramada2.Presentations.LoginActivity;
 import com.example.tareaprogramada2.R;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -70,6 +74,7 @@ public class ProfileFragment extends Fragment {
         // Required empty public constructor
     }
 
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -83,7 +88,6 @@ public class ProfileFragment extends Fragment {
         ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
 
-
         args.putString(USER_ID, param1);
         args.putBoolean(IS_OWNWER, param1.equals(Session.instance.currentUser._key));
 
@@ -94,6 +98,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             user_id = getArguments().getString(USER_ID);
             isOwner = getArguments().getBoolean(IS_OWNWER);
@@ -102,8 +107,26 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onAttach(Context context){
+        super.onAttach(context);
+
+        for (Fragment fragment : getChildFragmentManager().getFragments()) {
+            //getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+            getChildFragmentManager().beginTransaction()
+                    .detach(fragment)
+                    .attach(fragment)
+                    .commit();
+        }
+    }
+
+
     private void showOwnerWidgets(){
         configLayout.setVisibility(View.VISIBLE);
+        removeFriend.setVisibility(View.GONE);
+        sendRequest.setVisibility(View.GONE);
+        message.setVisibility(View.GONE);
+
     }
 
     private void visitingProfile(){
@@ -163,7 +186,6 @@ public class ProfileFragment extends Fragment {
         logOut = root.findViewById(R.id.btn_logOut);// btn_logOut
         configLayout = view.findViewById(R.id.layout_config);
 
-
         if (this.isOwner){
             setupComponents(Session.instance.currentUser, view);
             showOwnerWidgets();
@@ -202,10 +224,17 @@ public class ProfileFragment extends Fragment {
 
         GlideApp.with(this /* context */)
                 .load(storageReference)
+                .circleCrop()
                 .into(profilePicture);
 
         name.setText(myUser.name + " " + myUser.lastname);
-        setupViewPager(view, null);
+
+        ViewPager viewPager = view.findViewById(R.id.pages_profile);
+        setupViewPager(viewPager);
+
+        TabLayout tabLayout = view.findViewById(R.id.tabs_profile);
+        tabLayout.setupWithViewPager(viewPager);
+
 
         edit.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), EditInfoActivity.class);
@@ -231,11 +260,18 @@ public class ProfileFragment extends Fragment {
 
     }
 
-    public void setupViewPager(View view, ViewPager viewPage){
-        SectionsPageAdapter adapter = new SectionsPageAdapter(getFragmentManager());
-        ViewPager viewPager = view.findViewById(R.id.pages_profile);
+    public void setupViewPager(ViewPager viewPager){
 
-        adapter.addFragment(TimelineFragment.newInstance(profileOwner._key, false), "Timeline");
+        SectionsPageAdapter adapter = new SectionsPageAdapter(getFragmentManager());
+
+        System.out.println("********************************");
+        System.out.println("Setting up viewpager");
+
+        adapter.addFragment(TimelineFragment.newInstance(profileOwner._key, false), "Muro");
+        adapter.addFragment(FriendsFragment.newInstance("", ""), "Amigos");
+        adapter.addFragment(FriendsFragment.newInstance("", ""), "Amigos");
+
+        System.out.println("********************************");
         viewPager.setAdapter(adapter);
     }
 
@@ -249,7 +285,7 @@ public class ProfileFragment extends Fragment {
         String key = database.push().getKey();
         request._key = key;
         Map<String, Object> map = request.toMap();
-        database.push().setValue(map);
+        database.child(key).setValue(map);
         //So, this should make a difference
         message.setText("¡Solicitud enviada!");
         sendRequest.setVisibility(View.GONE);

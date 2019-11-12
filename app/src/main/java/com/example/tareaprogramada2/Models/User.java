@@ -22,7 +22,7 @@ public class User {
     public String email = "";
     public String genre = "";
     public String city = "";
-    public List<String> friends = new ArrayList<>();;
+    public List<String> friends = new ArrayList<>();
 
     public User(){
     }
@@ -55,6 +55,14 @@ public class User {
         result.put("email", email);
         result.put("genre", genre);
         result.put("education", education);
+        result.put("friends", friends);
         return result;
+    }
+
+    public int getCommonFriends(User other){
+        List<String> common = new ArrayList<>();
+        common.addAll(other.friends);
+        common.retainAll(this.friends);
+        return common.size();
     }
 }

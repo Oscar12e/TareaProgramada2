@@ -184,23 +184,25 @@ public class PostHolder extends RecyclerView.ViewHolder {
         if (post.postedBy.equals(myUser._key)){
             show.setVisibility(View.VISIBLE);
             //Set the buttons here
-        } else {
-            username.setClickable(true);
-            profilePic.setClickable(true);
 
-            username.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    openProfile(post, context, fullName);
-                }
-            });
-            profilePic.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    openProfile(post, context, fullName);
-                }
-            });
         }
+
+        username.setClickable(true);
+        profilePic.setClickable(true);
+
+        username.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openProfile(post, context, fullName);
+            }
+        });
+        profilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openProfile(post, context, fullName);
+            }
+        });
+
 
         username.setText(fullName);
         StorageReference storageReference;

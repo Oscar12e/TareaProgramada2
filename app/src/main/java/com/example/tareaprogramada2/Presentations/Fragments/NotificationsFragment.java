@@ -5,17 +5,28 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.tareaprogramada2.Models.FriendshipRequest;
+import com.example.tareaprogramada2.Models.NotificationAdapter;
+import com.example.tareaprogramada2.Models.Post;
+import com.example.tareaprogramada2.Models.PostAdapter;
+import com.example.tareaprogramada2.Models.Session;
+import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.R;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.ObservableSnapshotArray;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link NotificationsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link NotificationsFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -65,7 +76,29 @@ public class NotificationsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_notifications, container, false);
+        View view = inflater.inflate(R.layout.fragment_notifications, container, false);
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_notificacions);
+        RecyclerView.Adapter adapter = newAdapter();
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        return view;
+    }
+
+    protected RecyclerView.Adapter newAdapter() {
+        User myUser = Session.instance.currentUser;
+        Query query;
+
+        query = FirebaseDatabase.getInstance().getReference("request").orderByChild("receiver").equalTo(myUser._key);
+
+
+        FirebaseRecyclerOptions<FriendshipRequest> options =
+                new FirebaseRecyclerOptions.Builder<FriendshipRequest>()
+                        .setQuery(query, FriendshipRequest.class)
+                        .setLifecycleOwner(this)
+                        .build();
+
+        return new NotificationAdapter(options, getContext());
     }
 
 

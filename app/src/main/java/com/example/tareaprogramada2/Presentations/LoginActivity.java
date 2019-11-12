@@ -51,7 +51,6 @@ public class LoginActivity extends AppCompatActivity {
         if (currentUser != null){
             System.out.println("Email " + currentUser.getEmail());
             setSessionUser(currentUser.getEmail());
-
         }
     }
 
@@ -104,11 +103,12 @@ public class LoginActivity extends AppCompatActivity {
                     System.out.println("Reading email " + dsEmail);
 
                     if (dsEmail.equals(_email)){
-                        System.out.println("Found ya");
+
                         String Id = ds.getKey();
                         User user = ds.getValue(User.class);
                         user._key = Id;
                         Session.instance.currentUser = user;
+                        Session.instance.startListening(Id);
                         openMainActivity();
                     }
                 }

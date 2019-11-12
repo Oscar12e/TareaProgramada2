@@ -1,6 +1,7 @@
 package com.example.tareaprogramada2.Presentations;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
@@ -26,6 +27,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         pagesAdapter = new SectionsPageAdapter(getSupportFragmentManager());
+
+
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            getSupportFragmentManager().beginTransaction()
+                    .detach(fragment)
+                    .attach(fragment)
+                    .commit();
+        }
 
         ViewPager viewPager = findViewById(R.id.pages_main);
         setupViewPager(viewPager);

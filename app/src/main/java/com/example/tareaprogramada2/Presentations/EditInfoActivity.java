@@ -117,7 +117,12 @@ public class EditInfoActivity extends AppCompatActivity {
             field.setText(item);
         }
 
-        storageReference = FirebaseStorage.getInstance().getReference(myUser._key).child(myUser.profilePic);
+
+        if (!myUser.profilePic.equals("")){
+            storageReference = FirebaseStorage.getInstance().getReference(myUser._key).child(myUser.profilePic);
+        } else {
+            storageReference = FirebaseStorage.getInstance().getReference("default").child("user_default.png");
+        }
 
         GlideApp.with(this /* context */)
                 .load(storageReference)

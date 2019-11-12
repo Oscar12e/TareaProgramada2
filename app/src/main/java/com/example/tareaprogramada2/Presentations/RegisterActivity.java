@@ -103,6 +103,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void acceptUser(){
         User user = new User();
+
+
         user.email = email.getText().toString();
         user.name = name.getText().toString();
         user.lastname = lastname.getText().toString();
@@ -119,13 +121,13 @@ public class RegisterActivity extends AppCompatActivity {
 
         System.out.println("Check the db");
         //Crear referencia el usuario en la BD
-        setSessionUser(user.email);
+        setSessionUser(user.email, key);
 
     }
 
-    public void setSessionUser(String _email) {
+    public void setSessionUser(String _email, String _key) {
         System.out.println("Setting the data");
-        DatabaseReference usersReference = database.child("users");
+        DatabaseReference usersReference = database.child("users").child(_key);
         final Context context = this;
 
         usersReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -133,27 +135,14 @@ public class RegisterActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                System.out.println("Other if this");
-
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    String dsEmail = ds.child("email").getValue(String.class);
-                    System.out.println("Reading email " + dsEmail);
-
-                    if (dsEmail.equals(_email)) {
-                        System.out.println("Found ya");
-                        String Id = ds.getKey();
-                        User user = ds.getValue(User.class);
-                        user._key = Id;
-                        Session.instance.currentUser = user;
-
-
-                        Intent intent = new Intent(context, MainActivity.class);
-                        Intent intent2 = new Intent(context, EditInfoActivity.class);
-                        finish();
-                        startActivity(intent);
-                        startActivity(intent2);
-                    }
-                }
+                System.out.println("Setting user");
+                User user = dataSnapshot.getValue(User.class);
+                Session.instance.currentUser = user;
+                Intent intent = new Intent(context, MainActivity.class);
+                Intent intent2 = new Intent(context, EditInfoActivity.class);
+                finish();
+                startActivity(intent);
+                startActivity(intent2);
             }
 
             @Override
