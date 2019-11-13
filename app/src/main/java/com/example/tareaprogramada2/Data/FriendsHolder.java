@@ -1,15 +1,19 @@
 package com.example.tareaprogramada2.Data;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tareaprogramada2.Models.Post;
 import com.example.tareaprogramada2.Models.Session;
 import com.example.tareaprogramada2.Models.User;
+import com.example.tareaprogramada2.Presentations.ProfileActivity;
 import com.example.tareaprogramada2.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,6 +27,7 @@ public class FriendsHolder extends RecyclerView.ViewHolder {
     Context context;
     TextView name, amount;
     ImageView profilePic;
+    LinearLayout row;
 
     public FriendsHolder(@NonNull View itemView) {
         super(itemView);
@@ -33,6 +38,7 @@ public class FriendsHolder extends RecyclerView.ViewHolder {
         name = view.findViewById(R.id.txt_friendName);
         amount = view.findViewById(R.id.txt_commonFriends);
         profilePic = view.findViewById(R.id.img_profilePic);
+        row = view.findViewById(R.id.layout_friendData);
     }
 
     public void setup(){
@@ -55,6 +61,21 @@ public class FriendsHolder extends RecyclerView.ViewHolder {
                 .load(storageReference)
                 .circleCrop()
                 .into(profilePic);
+
+        row.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openProfile(friend._key, friend.getFullName());
+            }
+        });
+    }
+
+    public void openProfile(String key, String name){
+        Intent intent = new Intent(context, ProfileActivity.class);
+        intent.putExtra("USER_KEY", key);
+        intent.putExtra("USER_NAME", name);
+
+        context.startActivity(intent);
     }
 
     public void bind(String friendCode, Context context){

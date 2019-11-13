@@ -20,9 +20,11 @@
             android:layout_height="wrap_content" />
 
         <LinearLayout
+            android:id="@+id/layout_friendData"
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:background="@color/common_google_signin_btn_text_dark_default"
+            android:clickable="true"
             android:orientation="horizontal">
 
             <ImageView
