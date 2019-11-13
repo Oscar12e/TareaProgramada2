@@ -8,11 +8,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tareaprogramada2.Models.Post;
 import com.example.tareaprogramada2.Models.Session;
 import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.R;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -39,9 +37,13 @@ public class FriendsHolder extends RecyclerView.ViewHolder {
 
     public void setup(){
         User myUser = Session.instance.currentUser;
-        int commonFriends = myUser.getCommonFriends(friend);
+        int commonFriends = myUser.getCommonFriendsSize(friend);
+
         name.setText(friend.getFullName());
-        amount.setText( commonFriends + " amigos en común." );
+        if (myUser._key.equals(friend._key))
+            amount.setText( "" );
+        else
+            amount.setText( commonFriends + " amigos en común." );
 
         StorageReference storageReference;
         if (!friend.profilePic.equals("")){

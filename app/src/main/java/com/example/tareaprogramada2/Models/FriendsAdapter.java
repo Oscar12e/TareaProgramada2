@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tareaprogramada2.Data.FriendsHolder;
 import com.example.tareaprogramada2.Data.PostHolder;
@@ -12,8 +13,11 @@ import com.example.tareaprogramada2.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 
-public class FriendsAdapter extends FirebaseRecyclerAdapter<String, FriendsHolder> {
+import java.util.List;
+
+public class FriendsAdapter extends RecyclerView.Adapter<FriendsHolder>{
     private Context context;
+    private List<String> data;
 
     /**
      * Initialize a {@link RecyclerView.Adapter} that listens to a Firebase query. See
@@ -21,9 +25,9 @@ public class FriendsAdapter extends FirebaseRecyclerAdapter<String, FriendsHolde
      *
      * @param options
      */
-    public FriendsAdapter(@NonNull FirebaseRecyclerOptions<String> options , Context context) {
-        super(options);
+    public FriendsAdapter(List<String> data, Context context) {
         this.context = context;
+        this.data = data;
     }
 
 
@@ -37,7 +41,27 @@ public class FriendsAdapter extends FirebaseRecyclerAdapter<String, FriendsHolde
     }
 
     @Override
+    public void onBindViewHolder(@NonNull FriendsHolder holder, int position) {
+        //holder.bind( context );
+        holder.bind(data.get(position), context);
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return data.size();
+    }
+
+
+
+    /*
+    @Override
+    public int getItemCount() {
+        return 0;
+    }
+
+    @Override
     protected void onBindViewHolder(@NonNull FriendsHolder friendsHolder, int i, @NonNull String user) {
         friendsHolder.bind(user, context);
-    }
+    }*/
 }

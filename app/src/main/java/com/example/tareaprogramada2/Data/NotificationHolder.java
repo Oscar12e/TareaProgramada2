@@ -9,11 +9,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tareaprogramada2.Models.FriendshipRequest;
-import com.example.tareaprogramada2.Models.Post;
 import com.example.tareaprogramada2.Models.Session;
 import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.R;
@@ -23,13 +21,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class NotificationHolder extends RecyclerView.ViewHolder {
     Button accept, delete;
@@ -86,7 +80,7 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
 
     public void setupUI(Context context){
         User myUser = Session.instance.currentUser;
-        int commond = myUser.getCommonFriends(sender);
+        int commond = myUser.getCommonFriendsSize(sender);
 
         mutualFriends.setText(commond + " amigos en comun.");
         String fullName = sender.name + " " + sender.lastname;

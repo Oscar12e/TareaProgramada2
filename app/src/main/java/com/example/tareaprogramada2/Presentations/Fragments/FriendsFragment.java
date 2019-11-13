@@ -13,7 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioGroup;
+import android.widget.TableRow;
 
+import com.example.tareaprogramada2.Data.FriendsHolder;
 import com.example.tareaprogramada2.Models.FriendsAdapter;
 import com.example.tareaprogramada2.Models.Post;
 import com.example.tareaprogramada2.Models.PostAdapter;
@@ -25,6 +28,7 @@ import com.firebase.ui.database.ObservableSnapshotArray;
 import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
@@ -51,9 +55,16 @@ public class FriendsFragment extends Fragment {
     private String friendsFrom;
     private Boolean isOwner;
     private User profileOwner;
+    private RadioGroup filter;
 
     private View view;
     private RecyclerView recyclerView;
+    private TableRow filterRow;
+
+    DatabaseReference reference;
+    ValueEventListener currentListener;
+    RecyclerView.Adapter adapter;
+    List<String> friendsCodes = new ArrayList<>();
 
     public FriendsFragment() {
         // Required empty public constructor
@@ -87,10 +98,34 @@ public class FriendsFragment extends Fragment {
     }
 
     private void initialize(){
+        reference = FirebaseDatabase.getInstance().getReference("users").child(this.friendsFrom).child("friends");
+
         recyclerView = view.findViewById(R.id.recycler_friends);
-        RecyclerView.Adapter adapter = allFriendsApapter();
-        recyclerView.setAdapter(adapter);
+        //RecyclerView.Adapter adapter = allFriendsApapter();
+        //recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        filterRow = view.findViewById(R.id.row_friends);
+        filter = view.findViewById(R.id.radGroup_filters);
+        adapter =new FriendsAdapter (friendsCodes, getContext());
+        recyclerView.setAdapter(adapter);
+
+        filter.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if (i == R.id.radbtn_all){
+                    setAllFriendsApapter();
+                } else {
+                    setCommonFriendsApapter();
+                }
+            }
+        });
+
+
+        if (this.isOwner){
+            filterRow.setVisibility(View.GONE);
+        } else {
+            filterRow.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -99,45 +134,76 @@ public class FriendsFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_friends, container, false);
         initialize();
+        setAllFriendsApapter();
         return view;
     }
 
+    /*
     protected RecyclerView.Adapter allFriendsApapter() {
 
         Query query;
         query = FirebaseDatabase.getInstance().getReference("users").child(this.friendsFrom).child("friends");
 
 
-
-
         FirebaseRecyclerOptions<String> options =
                 new FirebaseRecyclerOptions.Builder<String>()
-                        .setQuery(query, String.class)/*
-                        .setQuery(query, new SnapshotParser<User>() {
-                            @NonNull
-                            @Override
-                            public User parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                String code = snapshot.getValue(String.class);
-                                final User[] result = new User[1];
-
-                                FirebaseDatabase.getInstance().getReference("users").child(code).addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        result[0] = dataSnapshot.getValue(User.class);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-
-                                return result[0];
-                            }
-                        })*/
+                        .setQuery(query, String.class)
                         .setLifecycleOwner(this)
                         .build();
 
         return new FriendsAdapter(options, getContext());
+    }*/
+
+    private void setAllFriendsApapter() {
+        if (currentListener!= null)
+            reference.removeEventListener(currentListener);
+
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                GenericTypeIndicator<ArrayList<String>> t = new GenericTypeIndicator<ArrayList<String>>() {};
+                List<String> friendsData = dataSnapshot.getValue(t);
+                updateAdpaterData(friendsData);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        reference.addValueEventListener(listener);
+        currentListener = listener;
+    }
+
+    private void setCommonFriendsApapter() {
+        if (currentListener!= null)
+            reference.removeEventListener(currentListener);
+
+
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User myUser = Session.instance.currentUser;
+                GenericTypeIndicator<ArrayList<String>> t = new GenericTypeIndicator<ArrayList<String>>() {};
+                List<String> friendsData = dataSnapshot.getValue(t);
+                updateAdpaterData(myUser.getCommonFriends(friendsData));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        reference.addValueEventListener(listener);
+        currentListener = listener;
+    }
+
+    private void updateAdpaterData(List<String> data){
+        friendsCodes.clear();
+        System.out.println("Modifing this");
+        friendsCodes.addAll(data);
+        adapter.notifyDataSetChanged();
     }
 }

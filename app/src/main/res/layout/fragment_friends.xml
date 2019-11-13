@@ -9,10 +9,12 @@
     <!-- TODO: Update blank fragment layout -->
 
     <TableRow
+        android:id="@+id/row_friends"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <RadioGroup
+            android:id="@+id/radGroup_filters"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">

@@ -61,12 +61,28 @@ public class User {
     }
 
     @Exclude
-    public int getCommonFriends(User other){
+    public int getCommonFriendsSize(User other){
+        return getCommonFriends(other).size();
+    }
+
+    @Exclude
+    public List<String> getCommonFriends(User other){
         List<String> common = new ArrayList<>();
         common.addAll(other.friends);
         common.retainAll(this.friends);
-        return common.size();
+        System.out.println("This are the common friends " + common.toString());
+        return common;
     }
+
+    @Exclude
+    public List<String> getCommonFriends(List<String> otherFriends){
+        List<String> common = new ArrayList<>();
+        common.addAll(otherFriends);
+        common.retainAll(this.friends);
+        return common;
+    }
+
+
 
     @Exclude
     public String getFullName(){
