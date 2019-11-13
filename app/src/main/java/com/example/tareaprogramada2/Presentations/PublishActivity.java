@@ -14,11 +14,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tareaprogramada2.Data.GlideApp;
 import com.example.tareaprogramada2.Models.PhotoContent;
 import com.example.tareaprogramada2.Models.Post;
 import com.example.tareaprogramada2.Models.ContentType;
 import com.example.tareaprogramada2.Models.Session;
 import com.example.tareaprogramada2.Models.TextContent;
+import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.Models.VideoContent;
 import com.example.tareaprogramada2.R;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -39,15 +41,14 @@ import com.google.firebase.storage.UploadTask;
 import java.util.Date;
 import java.util.Map;
 
-import static android.provider.MediaStore.Video.Thumbnails.VIDEO_ID;
 
 public class PublishActivity extends AppCompatActivity {
 
-    TextView postType;
+    TextView postType, name;
     ContentType type;
     EditText body;
     EditText link;
-    ImageView preview;
+    ImageView preview, profilePic;
     Uri imageUri = null;
     Button loadImg;
 
@@ -59,6 +60,11 @@ public class PublishActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_publish);
+        initialize();
+        setTypeText(null);
+    }
+
+    public void initialize(){
         database = FirebaseDatabase.getInstance().getReference("posts");
         type = ContentType.text;
         body = findViewById(R.id.tbox_text);
@@ -66,8 +72,32 @@ public class PublishActivity extends AppCompatActivity {
         postType = findViewById(R.id.txt_typeOfPost);
         preview = findViewById(R.id.img_preview);
         loadImg = findViewById(R.id.btn_loadImage);
+        profilePic = findViewById(R.id.img_profilePic);
+        name = findViewById(R.id.txt_name);
+    }
 
-        setTypeText(null);
+    @Override
+    public void onStart(){
+        super.onStart();
+        setup();
+    }
+
+    private void setup(){
+        User myUser = Session.instance.currentUser;
+
+        name.setText(myUser.getFullName());
+
+        StorageReference storageReference;
+        if (!myUser.profilePic.equals("")){
+            storageReference = FirebaseStorage.getInstance().getReference(myUser._key).child(myUser.profilePic);
+        } else {
+            storageReference = FirebaseStorage.getInstance().getReference("default").child("user_default.png");
+        }
+
+        GlideApp.with(this /* context */)
+                .load(storageReference)
+                .circleCrop()
+                .into(profilePic);
     }
 
     public void setTypeText(View view){

@@ -90,7 +90,7 @@
                 <ImageButton
                     android:id="@+id/btn_show"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:adjustViewBounds="false"
                     android:background="@null"
@@ -120,14 +120,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="?android:attr/colorControlHighlight">
-
-                    <Button
-                        android:id="@+id/btn_edit"
-                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Editar" />
 
                     <Button
                         android:id="@+id/btn_delete"

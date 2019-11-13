@@ -12,6 +12,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tareaprogramada2.Models.ContentType;
@@ -20,6 +21,10 @@ import com.example.tareaprogramada2.Models.Session;
 import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.Presentations.ProfileActivity;
 import com.example.tareaprogramada2.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,12 +35,14 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.Map;
 
+import static androidx.constraintlayout.widget.Constraints.TAG;
+
 public class PostHolder extends RecyclerView.ViewHolder {
 
     TextView username, body, postedAgo, link, likes, dislikes;
     ImageView photo, profilePic;
     ImageButton show, btn_like, btn_dislike;
-    Button edit, delete;
+    Button delete;
     TableRow menu;
     Post myPost;
     boolean showingMenu;
@@ -62,17 +69,23 @@ public class PostHolder extends RecyclerView.ViewHolder {
         btn_dislike = view.findViewById(R.id.btn_dislike);
 
         show = view.findViewById(R.id.btn_show);
-        edit = view.findViewById(R.id.btn_edit);
         delete = view.findViewById(R.id.btn_delete);
     }
 
-    private void  refreshVotes(){
+    private void deletePost(){
+        if (myPost.content.type == ContentType.photo){
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference(myPost._key).child(myPost.content.imageUrl);
+            storageReference.delete();
+        }
+        DatabaseReference postReference = FirebaseDatabase.getInstance().getReference("posts").child(myPost._key);
+        postReference.removeValue();
+    }
+
+    private void refreshVotes(){
         //Toast.makeText(this, "El post se ha subido!" , Toast.LENGTH_SHORT ).show();
         DatabaseReference postReference = FirebaseDatabase.getInstance().getReference("posts").child(myPost._key);
         postReference.setValue(myPost.toMap());
     }
-
-
 
     private void setupButtons(Context context, Post post, User user){
         showingMenu = false;
@@ -88,6 +101,13 @@ public class PostHolder extends RecyclerView.ViewHolder {
                     menu.setVisibility(View.GONE);
                     show.setImageDrawable( context.getDrawable(R.drawable.menu)  );
                 }
+            }
+        });
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deletePost();
             }
         });
 
@@ -152,8 +172,6 @@ public class PostHolder extends RecyclerView.ViewHolder {
         String fullName =  user.name + " " + user.lastname;
         if (post.postedBy.equals(myUser._key)){
             show.setVisibility(View.VISIBLE);
-            //Set the buttons here
-
         }
 
         username.setClickable(true);
@@ -172,7 +190,6 @@ public class PostHolder extends RecyclerView.ViewHolder {
             }
         });
 
-
         username.setText(fullName);
         StorageReference storageReference;
         if (!user.profilePic.equals("")){
@@ -184,14 +201,10 @@ public class PostHolder extends RecyclerView.ViewHolder {
                 .load(storageReference)
                 .circleCrop()
                 .into(profilePic);
-
     }
 
     public void bind(Post post, Context context){
         myPost = post;
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        System.out.println("Binding");
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         cleanView(context);
         setupContent(context);
 
