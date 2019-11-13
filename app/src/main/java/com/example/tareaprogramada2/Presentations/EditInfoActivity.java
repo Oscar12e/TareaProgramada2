@@ -2,12 +2,15 @@ package com.example.tareaprogramada2.Presentations;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.DialogFragment;
+import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,8 +31,15 @@ import com.example.tareaprogramada2.Models.Session;
 import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.Presentations.Fragments.DatePickerFragment;
 import com.example.tareaprogramada2.R;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.annotations.Nullable;
@@ -48,20 +58,22 @@ import java.util.Map;
 
 public class EditInfoActivity extends AppCompatActivity {
 
-    EditText name, lastname, city, phone, email, genre;
-    TextView birthday;
+    private EditText name, lastname, city, phone, email, genre, password;
+    private TextView birthday;
     private ImageView profilePicture;
+    private TableLayout educationTable;
+    private ConstraintLayout dialog;
 
-    List<EducationRowView> educationRows;
-    TableLayout educationTable;
-    int rowsAdded;
+
+    private List<EducationRowView> educationRows;
+    private int rowsAdded;
     private static final int GALLERY_INTENT = 101;
-
     public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    StorageReference storageReference;
-    private DatabaseReference database;
 
     private Uri profilePictureUri = null;
+    private FirebaseAuth mAuth;
+    private StorageReference storageReference;
+    private DatabaseReference database;
 
 
     @Override
@@ -91,46 +103,11 @@ public class EditInfoActivity extends AppCompatActivity {
         phone = findViewById(R.id.tbox_phone);
         email = findViewById(R.id.tbox_email);
         genre = findViewById(R.id.tbox_genre);
+        password = findViewById(R.id.tbox_password);
 
         birthday = findViewById(R.id.txt_birthday);
-    }
-
-
-    private void displayCurrentData(){
-        User myUser = Session.instance.currentUser;
-        System.out.println(myUser.toMap());
-
-        name.setText(myUser.name);
-        lastname.setText(myUser.lastname);
-        email.setText(myUser.email);
-        city.setText(myUser.city);
-        genre.setText(myUser.genre);
-        birthday.setText(myUser.birthday);
-        phone.setText(myUser.phoneNumber);
-
-        for (int i = 0; i < myUser.education.size() ; i++){
-            String item = myUser.education.get(i);
-            addRow(null);
-
-            EducationRowView row = educationRows.get(i);
-            EditText field = row.findViewById(R.id.tbox_educationField);
-            field.setText(item);
-        }
-
-
-        if (!myUser.profilePic.equals("")){
-            storageReference = FirebaseStorage.getInstance().getReference(myUser._key).child(myUser.profilePic);
-        } else {
-            storageReference = FirebaseStorage.getInstance().getReference("default").child("user_default.png");
-        }
-
-        GlideApp.with(this /* context */)
-                .load(storageReference)
-                .into(profilePicture);
-    }
-
-    private void saveChanges(View view){
-        DatabaseReference usersReference = database.child("users");
+        dialog = findViewById(R.id.dialog_layer);
+        mAuth = FirebaseAuth.getInstance();
     }
 
     public void addRow(View view){
@@ -164,6 +141,89 @@ public class EditInfoActivity extends AppCompatActivity {
         }
     }
 
+    private void displayCurrentData(){
+        User myUser = Session.instance.currentUser;
+        System.out.println(myUser.toMap());
+
+        name.setText(myUser.name);
+        lastname.setText(myUser.lastname);
+        email.setText(myUser.email);
+        city.setText(myUser.city);
+        genre.setText(myUser.genre);
+        birthday.setText(myUser.birthday);
+        phone.setText(myUser.phoneNumber);
+
+        for (int i = 0; i < myUser.education.size() ; i++){
+            String item = myUser.education.get(i);
+            addRow(null);
+
+            EducationRowView row = educationRows.get(i);
+            EditText field = row.findViewById(R.id.tbox_educationField);
+            field.setText(item);
+        }
+
+        if (!myUser.profilePic.equals("")){
+            storageReference = FirebaseStorage.getInstance().getReference(myUser._key).child(myUser.profilePic);
+        } else {
+            storageReference = FirebaseStorage.getInstance().getReference("default").child("user_default.png");
+        }
+
+        GlideApp.with(this /* context */)
+                .load(storageReference)
+                .into(profilePicture);
+    }
+
+
+
+    public void saveChanges(View view){
+
+        mAuth.signInWithEmailAndPassword(mAuth.getCurrentUser().getEmail(), password.getText().toString())
+            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(Task task) {
+
+                    if (task.isSuccessful()) {
+                        changeEmail();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Contraseña incorrecta." , Toast.LENGTH_SHORT ).show();
+                    }
+                }
+            });
+    }
+
+    private void changeEmail(){
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        String userEmail = user.getEmail();
+        String userPass = password.getText().toString();
+        String newEmail = email.getText().toString();
+
+        AuthCredential credential = EmailAuthProvider.getCredential(userEmail,userPass);
+
+        user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Log.d("TAG", "User re-authenticated.");
+
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                user.updateEmail(newEmail)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d("TAG", "User email address updated.");
+                            }
+                            updateUser();
+                        }
+                    });
+                    }
+                });
+
+
+    }
+
+
+
     public boolean isDataValid(){
         String name = ((EditText) findViewById(R.id.tbox_name)).getText().toString();
         int errors = 0;
@@ -187,14 +247,16 @@ public class EditInfoActivity extends AppCompatActivity {
         return errors == 0;
     }
 
-    public void updateUser(View view){
+    public void validateData(View view){
+        if (!isDataValid()) return;
 
-        if (!isDataValid()){
-            return;
-        }
+        dialog.setVisibility(View.VISIBLE);
+
+    }
+
+    public void updateUser(){
 
         User myUser = Session.instance.currentUser;
-
         myUser._key = Session.instance.currentUser._key;
         myUser.name = this.name.getText().toString();
         myUser.birthday = this.birthday.getText().toString();
@@ -235,6 +297,9 @@ public class EditInfoActivity extends AppCompatActivity {
         }
     }
 
+    public void hideDialog(View view){
+        dialog.setVisibility(View.GONE);
+    }
 
     public void updateUser(User user){
         Map<String, Object> map = user.toMap();

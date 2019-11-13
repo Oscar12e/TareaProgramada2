@@ -37,6 +37,7 @@ public class PostHolder extends RecyclerView.ViewHolder {
     ImageButton show, btn_like, btn_dislike;
     Button edit, delete;
     TableRow menu;
+    Post myPost;
     boolean showingMenu;
 
 
@@ -65,44 +66,13 @@ public class PostHolder extends RecyclerView.ViewHolder {
         delete = view.findViewById(R.id.btn_delete);
     }
 
-    private void  refreshVotes(String _key, boolean upVote){
+    private void  refreshVotes(){
         //Toast.makeText(this, "El post se ha subido!" , Toast.LENGTH_SHORT ).show();
-        String user_key = Session.instance.currentUser._key;
-        DatabaseReference postReference = FirebaseDatabase.getInstance().getReference("posts").child(_key);
-        postReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-
-                Post thisPost = dataSnapshot.getValue(Post.class);
-                if (thisPost == null) return;
-
-                if (upVote) {
-                    thisPost.registerLike(user_key);
-                } else {
-                    thisPost.registerDislike(user_key);
-                }
-
-
-                refreshVotes(thisPost);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w("LOGIN", "Failed to read value.", error.toException());
-                System.out.println("LOGIN" + "Failed to read value." + error.toException());
-            }
-        });
+        DatabaseReference postReference = FirebaseDatabase.getInstance().getReference("posts").child(myPost._key);
+        postReference.setValue(myPost.toMap());
     }
 
 
-    private void refreshVotes(Post post){
-        Map<String, Object> map = post.toMap();
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference("posts");
-        database.child(post._key).setValue(map);
-    }
 
     private void setupButtons(Context context, Post post, User user){
         showingMenu = false;
@@ -125,7 +95,7 @@ public class PostHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View view) {
                 post.registerLike(user._key);
-                refreshVotes(post._key, true);
+                refreshVotes();
             }
         });
 
@@ -133,46 +103,45 @@ public class PostHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View view) {
                 post.registerDislike(user._key);
-                //refreshVotes(post);
-                refreshVotes(post._key, false);
+                refreshVotes();
             }
         });
     }
 
-    private void setupContent(Post post, Context context){
-        body.setText(post.content.body);
-        postedAgo.setText( post.dateDifference());
+    private void setupContent(Context context){
+        body.setText(myPost.content.body);
+        postedAgo.setText( myPost.dateDifference());
 
-        if (post.content.type == ContentType.photo){
-            StorageReference storageReference = FirebaseStorage.getInstance().getReference(post._key).child(post.content.imageUrl);
+        if (myPost.content.type == ContentType.photo){
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference(myPost._key).child(myPost.content.imageUrl);
             GlideApp.with(context /* context */)
                     .load(storageReference)
                     .into(photo);
             photo.setVisibility(View.VISIBLE);
 
-        } else if (post.content.type == ContentType.youtube){
-            link.setText(post.content.link);
+        } else if (myPost.content.type == ContentType.youtube){
+            link.setText(myPost.content.link);
             link.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.content.link));
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(myPost.content.link));
                     context.startActivity(intent);
                 }
             });
             link.setVisibility(View.VISIBLE);
         }
 
-        if (post.likedBy.size() == 0){
+        if (myPost.likedBy.size() == 0){
             likes.setVisibility(View.GONE);
         } else {
-            likes.setText(Integer.toString( post.likedBy.size() ));
+            likes.setText(Integer.toString( myPost.likedBy.size() ));
             likes.setVisibility(View.VISIBLE);
         }
 
-        if (post.dislikedBy.size() == 0){
+        if (myPost.dislikedBy.size() == 0){
             dislikes.setVisibility(View.GONE);
         } else {
-            dislikes.setText(Integer.toString( post.dislikedBy.size() ));
+            dislikes.setText(Integer.toString( myPost.dislikedBy.size() ));
             dislikes.setVisibility(View.VISIBLE);
         }
     }
@@ -219,8 +188,12 @@ public class PostHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(Post post, Context context){
+        myPost = post;
+        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+        System.out.println("Binding");
+        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         cleanView(context);
-        setupContent(post, context);
+        setupContent(context);
 
 
         if (post.postedBy.equals(Session.instance.currentUser._key)){

@@ -2,6 +2,7 @@ package com.example.tareaprogramada2.Presentations;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +13,6 @@ import android.widget.EditText;
 import com.example.tareaprogramada2.Models.Session;
 import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.R;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -24,16 +24,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.functions.HttpsCallableResult;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
     private FirebaseFunctions mFunctions;
     private FirebaseAuth mAuth;
     private DatabaseReference database;
+    private ConstraintLayout loadingLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,16 +40,19 @@ public class LoginActivity extends AppCompatActivity {
         mFunctions = FirebaseFunctions.getInstance();
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference();
+        loadingLayout = findViewById(R.id.block_layer);
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        loadingLayout.setVisibility(View.VISIBLE);
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null){
-            System.out.println("Email " + currentUser.getEmail());
             setSessionUser(currentUser.getEmail());
+            loadingLayout.setVisibility(View.GONE);
         }
+        loadingLayout.setVisibility(View.GONE);
     }
 
     public void loginUser(View view){
@@ -61,6 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         if (email.equals(" ") || password.equals(" ")){
             return;
         }
+        loadingLayout.setVisibility(View.VISIBLE);
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {

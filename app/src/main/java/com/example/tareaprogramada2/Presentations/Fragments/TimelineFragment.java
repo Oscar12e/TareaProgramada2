@@ -110,9 +110,6 @@ public class TimelineFragment extends Fragment {
 
     protected RecyclerView.Adapter newAdapter() {
         Query query;
-        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-        System.out.println("Timeline fragment new adapter");
-        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
         if (postFrom.equals("")){
             query = FirebaseDatabase.getInstance().getReference("posts").orderByChild("postedTime");

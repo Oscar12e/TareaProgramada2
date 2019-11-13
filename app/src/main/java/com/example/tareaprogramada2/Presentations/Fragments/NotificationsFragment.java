@@ -87,10 +87,9 @@ public class NotificationsFragment extends Fragment {
 
     protected RecyclerView.Adapter newAdapter() {
         User myUser = Session.instance.currentUser;
+
         Query query;
-
         query = FirebaseDatabase.getInstance().getReference("request").orderByChild("receiver").equalTo(myUser._key);
-
 
         FirebaseRecyclerOptions<FriendshipRequest> options =
                 new FirebaseRecyclerOptions.Builder<FriendshipRequest>()

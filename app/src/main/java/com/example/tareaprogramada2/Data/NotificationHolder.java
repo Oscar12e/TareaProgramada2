@@ -64,27 +64,6 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
         database.setValue(sender.friends);
 
         deleteRequest(request, "Se ha aceptado la solicitud de amistad.", context);
-        /*
-
-        database.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-
-                User senderUser = dataSnapshot.getValue(User.class);
-                senderUser.friends.add(myUser._key);
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w("LOGIN", "Failed to read value.", error.toException());
-                System.out.println("LOGIN" + "Failed to read value." + error.toException());
-            }
-        });*/
-
     }
 
     private void deleteRequest(FriendshipRequest request, String message, Context context){
@@ -154,7 +133,6 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-
                 sender = dataSnapshot.getValue(User.class);
                 setup(request, context);
             }
