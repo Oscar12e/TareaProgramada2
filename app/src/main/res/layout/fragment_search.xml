@@ -61,7 +61,14 @@
     </TableRow>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_search"
+        android:id="@+id/recycler_profiles"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_posts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:visibility="gone" />
 </LinearLayout>

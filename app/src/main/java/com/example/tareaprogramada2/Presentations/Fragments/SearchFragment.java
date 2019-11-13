@@ -50,10 +50,10 @@ public class SearchFragment extends Fragment {
 
     private List<String> profilesResults = new ArrayList<>();
     private List<Post> postResults = new ArrayList<>();
-    private RecyclerView.Adapter adapter;
+    private RecyclerView.Adapter adapterUser, adapterPosts;
 
     private RadioGroup radioGroup;
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerUsers, recyclerPosts;
     private View root;
     private Button searchBtn;
     private EditText searchBar;
@@ -72,11 +72,18 @@ public class SearchFragment extends Fragment {
     }
 
     private void initialize(){
-        recyclerView = root.findViewById(R.id.recycler_search);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerUsers = root.findViewById(R.id.recycler_profiles);
+        recyclerUsers.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adapter = new PostAdapter(postResults, getContext());
-        recyclerView.setAdapter(adapter);
+        recyclerPosts = root.findViewById(R.id.recycler_posts);
+        recyclerPosts.setLayoutManager(new LinearLayoutManager(getContext()));
+
+
+        adapterPosts = new PostAdapter(postResults, getContext());
+        recyclerPosts.setAdapter(adapterPosts);
+
+        adapterUser = new UsersAdapter(profilesResults, getContext());
+        recyclerUsers.setAdapter(adapterUser);
 
 
         radioGroup = root.findViewById(R.id.searchFilters);
@@ -84,8 +91,6 @@ public class SearchFragment extends Fragment {
         searchBtn.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View view) {
-                 adapter = new PostAdapter(postResults, getContext());
-                 recyclerView.swapAdapter(adapter, true);
                  searchPost();
              }
          });
@@ -100,34 +105,23 @@ public class SearchFragment extends Fragment {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 if (i == R.id.radbtn_post){
-                    searchBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            adapter = new PostAdapter(postResults, getContext());
-                            recyclerView.swapAdapter(adapter, false);
-                            searchPost();
-                        }
-                    });
+                    searchBtn.setOnClickListener(view -> searchPost());
 
                 } else {
-                    searchBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            adapter = new UsersAdapter(profilesResults, getContext());
-                            recyclerView.swapAdapter(adapter, false);
-                            searchProfiles();
-                        }
-                    });
+                    searchBtn.setOnClickListener(view -> searchProfiles());
                 }
             }
         });
 
     }
 
+    private String[] getSearchCriteria(){
+        String searchCriteria = searchBar.getText().toString().toLowerCase();
+        return searchCriteria.split(" ");
+    }
 
     private void searchPost(){
-        String searchCriteria = searchBar.getText().toString();
-        String[] searchPieces = searchCriteria.split(" ");
+        String[] searchPieces = getSearchCriteria();
 
         postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -160,8 +154,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void searchProfiles(){
-        String searchCriteria = searchBar.getText().toString();
-        String[] searchPieces = searchCriteria.split(" ");
+        String[] searchPieces = getSearchCriteria();
 
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -198,21 +191,25 @@ public class SearchFragment extends Fragment {
 
     private void startPostAdapter(List<Post> result){
         postResults.clear();
-        System.out.println("Modifing this");
-        if (result != null)
-            postResults.addAll(result);
-        adapter.notifyDataSetChanged();
+
+        if (result != null) postResults.addAll(result);
+
+        adapterPosts.notifyDataSetChanged();
+
+        recyclerUsers.setVisibility(View.GONE);
+        recyclerPosts.setVisibility(View.VISIBLE);
     }
 
     private void startUserAdapter(List<String> result){
         profilesResults.clear();
-        System.out.println("Add");
+
         if (result != null){
-            System.out.println("Resultados: " + result.size());
             profilesResults.addAll(result);
         }
 
-        adapter.notifyDataSetChanged();
+        adapterUser.notifyDataSetChanged();
+        recyclerUsers.setVisibility(View.VISIBLE);
+        recyclerPosts.setVisibility(View.GONE);
     }
 
 
