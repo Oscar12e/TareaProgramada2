@@ -22,14 +22,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public class FriendsHolder extends RecyclerView.ViewHolder {
+public class UserHolder extends RecyclerView.ViewHolder {
     User friend;
     Context context;
     TextView name, amount;
     ImageView profilePic;
     LinearLayout row;
 
-    public FriendsHolder(@NonNull View itemView) {
+    public UserHolder(@NonNull View itemView) {
         super(itemView);
         initialize(itemView);
     }

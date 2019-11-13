@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.RadioGroup;
 import android.widget.TableRow;
 
-import com.example.tareaprogramada2.Models.FriendsAdapter;
+import com.example.tareaprogramada2.Models.UsersAdapter;
 import com.example.tareaprogramada2.Models.Session;
 import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.R;
@@ -96,7 +96,7 @@ public class FriendsFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         filterRow = view.findViewById(R.id.row_friends);
         filter = view.findViewById(R.id.radGroup_filters);
-        adapter = new FriendsAdapter (friendsCodes, getContext());
+        adapter = new UsersAdapter(friendsCodes, getContext());
         recyclerView.setAdapter(adapter);
 
         filter.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {

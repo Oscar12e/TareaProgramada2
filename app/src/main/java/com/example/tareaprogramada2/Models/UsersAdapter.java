@@ -7,15 +7,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tareaprogramada2.Data.FriendsHolder;
-import com.example.tareaprogramada2.Data.PostHolder;
+import com.example.tareaprogramada2.Data.UserHolder;
 import com.example.tareaprogramada2.R;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 
 import java.util.List;
 
-public class FriendsAdapter extends RecyclerView.Adapter<FriendsHolder>{
+public class UsersAdapter extends RecyclerView.Adapter<UserHolder>{
     private Context context;
     private List<String> data;
 
@@ -25,7 +23,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsHolder>{
      *
      * @param options
      */
-    public FriendsAdapter(List<String> data, Context context) {
+    public UsersAdapter(List<String> data, Context context) {
         this.context = context;
         this.data = data;
     }
@@ -34,14 +32,14 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsHolder>{
 
     @NonNull
     @Override
-    public FriendsHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new FriendsHolder(LayoutInflater.from(parent.getContext())
+    public UserHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new UserHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_friend, parent, false));
 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull FriendsHolder holder, int position) {
+    public void onBindViewHolder(@NonNull UserHolder holder, int position) {
         //holder.bind( context );
         holder.bind(data.get(position), context);
 
