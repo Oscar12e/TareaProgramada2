@@ -11,8 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TableRow;
 
+import com.example.tareaprogramada2.Data.GlideApp;
 import com.example.tareaprogramada2.Models.Post;
 import com.example.tareaprogramada2.Models.PostAdapter;
 import com.example.tareaprogramada2.Models.Session;
@@ -25,6 +28,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +100,15 @@ public class TimelineFragment extends Fragment {
             startActivity(intent);
         });
 
+        EditText text = myView.findViewById(R.id.tbox_dummy);
+        text.setOnClickListener(view -> {
+            Intent intent = new Intent(getContext(), PublishActivity.class);
+            startActivity(intent);
+        });
+
+        ImageView mini = myView.findViewById(R.id.img_minicrop);
+
+
 
         postsRef = FirebaseDatabase.getInstance().getReference("posts");
 
@@ -103,8 +117,24 @@ public class TimelineFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        if (postFrom.equals(""))
+        if (postFrom.equals("")){
+
+            User myUser = Session.instance.currentUser;
+            StorageReference storageReference;
+            if (!myUser.profilePic.equals("")){
+                storageReference = FirebaseStorage.getInstance().getReference(myUser._key).child(myUser.profilePic);
+            } else {
+                storageReference = FirebaseStorage.getInstance().getReference("default").child("user_default.png");
+            }
+
+            GlideApp.with(this /* context */)
+                    .load(storageReference)
+                    .circleCrop()
+                    .into(mini);
+
             attachFriendsListener();
+        }
+
         else {
             attachProfileListener();
         }
@@ -123,7 +153,7 @@ public class TimelineFragment extends Fragment {
 
                 for (DataSnapshot ds : dataSnapshot.getChildren()){
                     Post post = ds.getValue(Post.class);
-                    if (myUser.isAFriend(post.postedBy)){
+                    if (myUser.isAFriend(post.postedBy) || myUser._key.equals(post.postedBy)){
                         result.add(post);
                     }
                 }

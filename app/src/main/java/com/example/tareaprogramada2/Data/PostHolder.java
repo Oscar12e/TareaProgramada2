@@ -47,6 +47,7 @@ public class PostHolder extends RecyclerView.ViewHolder {
     Post myPost;
     boolean showingMenu;
 
+    User userOwner;
 
     public PostHolder(View itemView) {
         super(itemView);
@@ -87,7 +88,8 @@ public class PostHolder extends RecyclerView.ViewHolder {
         postReference.setValue(myPost.toMap());
     }
 
-    private void setupButtons(Context context, Post post, User user){
+    private void setupButtons(Context context, Post post){
+        User myUser = Session.instance.currentUser;
         showingMenu = false;
         show.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,7 +116,7 @@ public class PostHolder extends RecyclerView.ViewHolder {
         btn_like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                post.registerLike(user._key);
+                post.registerLike(myUser._key);
                 refreshVotes();
             }
         });
@@ -122,7 +124,7 @@ public class PostHolder extends RecyclerView.ViewHolder {
         btn_dislike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                post.registerDislike(user._key);
+                post.registerDislike(myUser._key);
                 refreshVotes();
             }
         });
@@ -166,10 +168,11 @@ public class PostHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public void setupUser(Post post, User user, Context context) {
+    public void setupUser(Post post, Context context) {
         User myUser = Session.instance.currentUser;
-        setupButtons(context, post, user);
-        String fullName =  user.name + " " + user.lastname;
+
+        setupButtons(context, post);
+        String fullName =  userOwner.name + " " + userOwner.lastname;
         if (post.postedBy.equals(myUser._key)){
             show.setVisibility(View.VISIBLE);
         }
@@ -192,8 +195,8 @@ public class PostHolder extends RecyclerView.ViewHolder {
 
         username.setText(fullName);
         StorageReference storageReference;
-        if (!user.profilePic.equals("")){
-            storageReference = FirebaseStorage.getInstance().getReference(user._key).child(user.profilePic);
+        if (!userOwner.profilePic.equals("")){
+            storageReference = FirebaseStorage.getInstance().getReference(userOwner._key).child(userOwner.profilePic);
         } else {
             storageReference = FirebaseStorage.getInstance().getReference("default").child("user_default.png");
         }
@@ -210,7 +213,8 @@ public class PostHolder extends RecyclerView.ViewHolder {
 
 
         if (post.postedBy.equals(Session.instance.currentUser._key)){
-            setupUser(post, Session.instance.currentUser, context);
+            userOwner = Session.instance.currentUser;
+            setupUser(post , context);
         } else {
             DatabaseReference usersReference = FirebaseDatabase.getInstance().getReference("users").child(post.postedBy);
             usersReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -219,8 +223,8 @@ public class PostHolder extends RecyclerView.ViewHolder {
                     // This method is called once with the initial value and again
                     // whenever data at this location is updated.
 
-                    User myUser = dataSnapshot.getValue(User.class);
-                    setupUser(post, myUser, context);
+                    userOwner = dataSnapshot.getValue(User.class);
+                    setupUser(post, context);
                 }
 
                 @Override

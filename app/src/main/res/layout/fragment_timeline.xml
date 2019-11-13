@@ -20,32 +20,30 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:paddingStart="10dp"
-            android:paddingTop="10dp"
+            android:paddingTop="15dp"
             android:paddingEnd="10dp"
-            android:paddingBottom="0dp">
+            android:paddingBottom="15dp">
 
             <ImageView
                 android:id="@+id/img_minicrop"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
                 tools:src="@tools:sample/avatars" />
 
             <EditText
                 android:id="@+id/tbox_dummy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_weight="1"
                 android:clickable="true"
-                android:editable="false"
                 android:ems="10"
+                android:focusable="false"
                 android:gravity="start|top"
+                android:hint="¿Que estas pensando?"
                 android:inputType="textMultiLine" />
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="false"
-                android:text="Publicar" />
         </TableRow>
 
         <TableRow

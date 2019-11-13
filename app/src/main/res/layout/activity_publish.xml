@@ -131,17 +131,25 @@
                 android:hint="Link al video en YouTube"
                 android:inputType="textPersonName" />
 
-            <EditText
-                android:id="@+id/tbox_text"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@android:color/transparent"
-                android:ems="10"
-                android:gravity="top"
-                android:hint="Descripcion"
-                android:inputType="textMultiLine"
-                android:paddingStart="10dp"
-                android:textAlignment="viewStart" />
+                android:background="@color/common_google_signin_btn_text_light_focused">
+
+                <EditText
+                    android:id="@+id/tbox_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:background="@color/common_google_signin_btn_text_dark_default"
+                    android:ems="10"
+                    android:gravity="top"
+                    android:hint="..."
+                    android:inputType="textMultiLine"
+                    android:paddingStart="10dp"
+                    android:textAlignment="viewStart" />
+            </FrameLayout>
+
         </LinearLayout>
     </ScrollView>
 

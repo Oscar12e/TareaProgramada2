@@ -4,232 +4,215 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/holo_blue_bright"
+    android:background="@android:color/darker_gray"
     android:orientation="vertical">
 
     <Space
         android:layout_width="match_parent"
         android:layout_height="10dp" />
 
-    <TableRow
+    <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@android:color/background_light"
+        android:orientation="vertical"
+        android:padding="15dp"
+        android:paddingStart="15dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="15dp"
+        android:visibility="visible">
 
-        <Space
-            android:layout_width="20dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <LinearLayout
-            android:id="@+id/linearLayout"
+        <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/background_light"
-            android:orientation="vertical"
-            android:padding="15dp"
-            android:paddingStart="15dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="15dp"
-            android:visibility="visible">
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="10dp"
-                android:paddingTop="0dp"
-                android:paddingBottom="0dp">
-
-                <ImageView
-                    android:id="@+id/img_profilePic"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0"
-                    android:adjustViewBounds="true"
-                    android:maxWidth="64dp"
-                    android:maxHeight="64dp"
-                    android:minWidth="64dp"
-                    android:minHeight="64dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    tools:srcCompat="@drawable/user_default" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/txt_postedBy"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="0"
-                        android:text="Usuario Pruebas"
-                        android:textColor="@color/design_default_color_primary_dark"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/txt_postedAt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center|start"
-                        android:layout_weight="0"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
-                        android:text="Hora"
-                        android:textColor="@android:color/black" />
-
-                </LinearLayout>
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.1" />
-
-                <ImageButton
-                    android:id="@+id/btn_show"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:adjustViewBounds="false"
-                    android:background="@null"
-                    android:cropToPadding="false"
-                    android:src="@drawable/menu"
-                    android:text="..."
-                    android:textSize="10sp"
-                    tools:src="@drawable/menu" />
-
-            </TableRow>
-
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp">
-
-                <Space
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <TableRow
-                    android:id="@+id/row_options"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="?android:attr/colorControlHighlight">
-
-                    <Button
-                        android:id="@+id/btn_delete"
-                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Eliminar" />
-
-                </TableRow>
-
-                <Space
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-            </TableRow>
+            android:paddingStart="10dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp">
 
             <ImageView
-                android:id="@+id/img_photo"
+                android:id="@+id/img_profilePic"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="0"
+                android:adjustViewBounds="true"
+                android:maxWidth="64dp"
+                android:maxHeight="64dp"
+                android:minWidth="64dp"
+                android:minHeight="64dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                tools:srcCompat="@drawable/user_default" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txt_postedBy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0"
+                    android:text="Usuario Pruebas"
+                    android:textColor="@color/design_default_color_primary_dark"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt_postedAt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|start"
+                    android:layout_weight="0"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:text="Hora"
+                    android:textColor="@android:color/black" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1" />
+
+            <ImageButton
+                android:id="@+id/btn_show"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:adjustViewBounds="false"
+                android:background="@null"
+                android:cropToPadding="false"
+                android:src="@drawable/menu"
+                android:text="..."
+                android:textSize="10sp"
+                tools:src="@drawable/menu" />
+
+        </TableRow>
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <Space
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TableRow
+                android:id="@+id/row_options"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:attr/colorControlHighlight">
+
+                <Button
+                    android:id="@+id/btn_delete"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Eliminar" />
+
+            </TableRow>
+
+            <Space
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+        </TableRow>
+
+        <ImageView
+            android:id="@+id/img_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:maxWidth="128dp"
+            android:maxHeight="128dp"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/txt_link"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:textColor="@color/design_default_color_primary" />
+
+        <TextView
+            android:id="@+id/txt_body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:text="Cuerpo"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/widget_edittext_dark"
+            android:textSize="14sp" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/txt_likes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:maxWidth="512dp"
-                android:maxHeight="512dp"
-                tools:srcCompat="@tools:sample/avatars" />
+                android:layout_weight="1"
+                android:text="0"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp" />
 
-            <TextView
-                android:id="@+id/txt_link"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:text="TextView"
-                android:textColor="@color/design_default_color_primary" />
-
-            <TextView
-                android:id="@+id/txt_body"
+            <ImageButton
+                android:id="@+id/btn_like"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:text="Cuerpo"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                android:textColor="@android:color/widget_edittext_dark"
-                android:textSize="14sp" />
+                android:layout_weight="1"
+                android:src="@drawable/like"
+                android:text="Like" />
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="wrap_content" />
 
-                <TextView
-                    android:id="@+id/txt_likes"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:text="0"
-                    android:textAlignment="viewEnd"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="20sp" />
-
-                <ImageButton
-                    android:id="@+id/btn_like"
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:src="@drawable/like"
-                    android:text="Like" />
-
-                <Space
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:id="@+id/txt_dislikes"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:text="0"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="20sp" />
-
-                <ImageButton
-                    android:id="@+id/btn_dislike"
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:src="@drawable/dislike"
-                    android:text="Dislike" />
-            </TableRow>
-
-            <Button
-                android:id="@+id/btn_comments"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/txt_dislikes"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="0"
+                android:textColor="@color/colorAccent"
+                android:textSize="20sp" />
 
-                android:text="Comentarios" />
+            <ImageButton
+                android:id="@+id/btn_dislike"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/dislike"
+                android:text="Dislike" />
+        </TableRow>
 
-        </LinearLayout>
-
-        <Space
-            android:layout_width="20dp"
+        <Button
+            android:id="@+id/btn_comments"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
 
-    </TableRow>
+            android:text="Comentarios" />
+
+    </LinearLayout>
 
     <Space
         android:layout_width="match_parent"
