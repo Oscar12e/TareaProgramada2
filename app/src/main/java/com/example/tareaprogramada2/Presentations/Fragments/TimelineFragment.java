@@ -3,6 +3,7 @@ package com.example.tareaprogramada2.Presentations.Fragments;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,17 +11,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TableRow;
 
 import com.example.tareaprogramada2.Models.Post;
 import com.example.tareaprogramada2.Models.PostAdapter;
+import com.example.tareaprogramada2.Models.Session;
+import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.Presentations.PublishActivity;
 import com.example.tareaprogramada2.R;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.firebase.ui.database.ObservableSnapshotArray;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,7 +45,10 @@ public class TimelineFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private boolean allowPost;
     private String postFrom;
+    private RecyclerView.Adapter adapter;
+    private List<Post> postOnTimeline = new ArrayList<>();
 
+    private DatabaseReference postsRef;
 
     public TimelineFragment() {
         // Required empty public constructor
@@ -76,53 +86,88 @@ public class TimelineFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View myView = inflater.inflate(R.layout.fragment_timeline, container, false);
-
-        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-        System.out.println("OnCreate Timeline Fragment");
-        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-
-        ImageButton postText = myView.findViewById(R.id.btn_text);
         TableRow row_publish = myView.findViewById(R.id.row_publish);
 
-        postText.setOnClickListener(view -> {
+        row_publish.setVisibility( allowPost ? View.VISIBLE : View.GONE);
+
+        row_publish.setOnClickListener(view -> {
             Intent intent = new Intent(getContext(), PublishActivity.class);
             startActivity(intent);
         });
 
-        if (allowPost){
-            row_publish.setOnClickListener(view -> {
-                Intent intent = new Intent(getContext(), PublishActivity.class);
-                startActivity(intent);
-            });
-            row_publish.setVisibility(View.VISIBLE);
-        } else {
-            row_publish.setVisibility(View.GONE);
-        }
 
+        postsRef = FirebaseDatabase.getInstance().getReference("posts");
 
         RecyclerView recyclerView = myView.findViewById(R.id.recyler_timeline);
-        RecyclerView.Adapter adapter = newAdapter();
+        adapter = new PostAdapter(postOnTimeline, getContext());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        if (postFrom.equals(""))
+            attachFriendsListener();
+        else {
+            attachProfileListener();
+        }
 
         return myView;
     }
 
-    protected RecyclerView.Adapter newAdapter() {
-        Query query;
+    private void attachFriendsListener(){
+        Query query = postsRef.orderByChild("postedTime");
 
-        if (postFrom.equals("")){
-            query = FirebaseDatabase.getInstance().getReference("posts").orderByChild("postedTime");
-        } else {
-            query = FirebaseDatabase.getInstance().getReference("posts").orderByChild("postedBy").equalTo(postFrom);
-        }
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User myUser = Session.instance.currentUser;
+                List<Post> result = new ArrayList<>();
 
-        FirebaseRecyclerOptions<Post> options =
-                new FirebaseRecyclerOptions.Builder<Post>()
-                        .setQuery(query, Post.class)
-                        .setLifecycleOwner(this)
-                        .build();
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                    Post post = ds.getValue(Post.class);
+                    if (myUser.isAFriend(post.postedBy)){
+                        result.add(post);
+                    }
+                }
+                updateAdapterData(result);
+            }
 
-        return new PostAdapter(options, getContext());
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        };
+        query.addValueEventListener(listener);
+
+    }
+
+    private void attachProfileListener(){
+
+        Query query = postsRef.orderByChild("postedTime");
+
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                List<Post> result = new ArrayList<>();
+
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                    Post post = ds.getValue(Post.class);
+                    if (post.postedBy.equals(postFrom))
+                        result.add(post);
+                }
+                updateAdapterData(result);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        };
+        query.addValueEventListener(listener);
+    }
+
+    private void updateAdapterData(List<Post> data){
+        postOnTimeline.clear();
+        System.out.println("Modifing this");
+        if (data != null)
+            postOnTimeline.addAll(data);
+        adapter.notifyDataSetChanged();
     }
 }

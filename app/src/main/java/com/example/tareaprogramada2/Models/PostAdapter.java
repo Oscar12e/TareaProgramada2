@@ -15,8 +15,11 @@ import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
-public class PostAdapter extends FirebaseRecyclerAdapter<Post, PostHolder> {
+import java.util.List;
+
+public class PostAdapter extends RecyclerView.Adapter<PostHolder> {
     private Context context;
+    private List<Post> data;
 
     /**
      * Initialize a {@link RecyclerView.Adapter} that listens to a Firebase query. See
@@ -24,9 +27,9 @@ public class PostAdapter extends FirebaseRecyclerAdapter<Post, PostHolder> {
      *
      * @param options
      */
-    public PostAdapter(@NonNull FirebaseRecyclerOptions<Post> options, Context context) {
-        super(options);
+    public PostAdapter(List<Post> data, Context context) {
         this.context = context;
+        this.data = data;
     }
 
     @NonNull
@@ -37,8 +40,13 @@ public class PostAdapter extends FirebaseRecyclerAdapter<Post, PostHolder> {
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull PostHolder postHolder, int i, @NonNull Post post) {
-        postHolder.bind(post, context);
+    public void onBindViewHolder(@NonNull PostHolder postHolder, int i) {
+        postHolder.bind(data.get(i), context);
+    }
+
+    @Override
+    public int getItemCount() {
+        return data.size();
     }
 
 }

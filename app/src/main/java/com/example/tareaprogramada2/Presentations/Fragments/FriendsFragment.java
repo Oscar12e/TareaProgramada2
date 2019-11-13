@@ -1,8 +1,5 @@
 package com.example.tareaprogramada2.Presentations.Fragments;
 
-import android.content.Context;
-import android.database.DataSetObservable;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,22 +13,15 @@ import android.view.ViewGroup;
 import android.widget.RadioGroup;
 import android.widget.TableRow;
 
-import com.example.tareaprogramada2.Data.FriendsHolder;
 import com.example.tareaprogramada2.Models.FriendsAdapter;
-import com.example.tareaprogramada2.Models.Post;
-import com.example.tareaprogramada2.Models.PostAdapter;
 import com.example.tareaprogramada2.Models.Session;
 import com.example.tareaprogramada2.Models.User;
 import com.example.tareaprogramada2.R;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.firebase.ui.database.ObservableSnapshotArray;
-import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -115,7 +105,7 @@ public class FriendsFragment extends Fragment {
                 if (i == R.id.radbtn_all){
                     setAllFriendsApapter();
                 } else {
-                    setCommonFriendsApapter();
+                    setCommonFriendsAdapter();
                 }
             }
         });
@@ -137,21 +127,6 @@ public class FriendsFragment extends Fragment {
         return view;
     }
 
-    /*
-    protected RecyclerView.Adapter allFriendsApapter() {
-
-        Query query;
-        query = FirebaseDatabase.getInstance().getReference("users").child(this.friendsFrom).child("friends");
-
-
-        FirebaseRecyclerOptions<String> options =
-                new FirebaseRecyclerOptions.Builder<String>()
-                        .setQuery(query, String.class)
-                        .setLifecycleOwner(this)
-                        .build();
-
-        return new FriendsAdapter(options, getContext());
-    }*/
 
     private void setAllFriendsApapter() {
         if (currentListener!= null)
@@ -162,7 +137,7 @@ public class FriendsFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 GenericTypeIndicator<ArrayList<String>> t = new GenericTypeIndicator<ArrayList<String>>() {};
                 List<String> friendsData = dataSnapshot.getValue(t);
-                updateAdpaterData(friendsData);
+                updateAdapterData(friendsData);
             }
 
             @Override
@@ -175,7 +150,7 @@ public class FriendsFragment extends Fragment {
         currentListener = listener;
     }
 
-    private void setCommonFriendsApapter() {
+    private void setCommonFriendsAdapter() {
         if (currentListener!= null)
             reference.removeEventListener(currentListener);
 
@@ -186,7 +161,7 @@ public class FriendsFragment extends Fragment {
                 User myUser = Session.instance.currentUser;
                 GenericTypeIndicator<ArrayList<String>> t = new GenericTypeIndicator<ArrayList<String>>() {};
                 List<String> friendsData = dataSnapshot.getValue(t);
-                updateAdpaterData(myUser.getCommonFriends(friendsData));
+                updateAdapterData(myUser.getCommonFriends(friendsData));
             }
 
             @Override
@@ -199,7 +174,7 @@ public class FriendsFragment extends Fragment {
         currentListener = listener;
     }
 
-    private void updateAdpaterData(List<String> data){
+    private void updateAdapterData(List<String> data){
         friendsCodes.clear();
         System.out.println("Modifing this");
         if (data != null)

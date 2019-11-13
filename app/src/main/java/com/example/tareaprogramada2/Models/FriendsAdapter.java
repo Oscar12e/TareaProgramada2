@@ -52,16 +52,4 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsHolder>{
         return data.size();
     }
 
-
-
-    /*
-    @Override
-    public int getItemCount() {
-        return 0;
-    }
-
-    @Override
-    protected void onBindViewHolder(@NonNull FriendsHolder friendsHolder, int i, @NonNull String user) {
-        friendsHolder.bind(user, context);
-    }*/
 }

@@ -82,6 +82,11 @@ public class User {
         return common;
     }
 
+    @Exclude
+    public boolean isAFriend(String userKey){
+        return friends.contains(userKey);
+    }
+
 
 
     @Exclude
