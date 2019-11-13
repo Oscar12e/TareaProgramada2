@@ -2,6 +2,7 @@ package com.example.tareaprogramada2.Models;
 
 import android.media.Image;
 
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.util.ArrayList;
@@ -59,10 +60,16 @@ public class User {
         return result;
     }
 
+    @Exclude
     public int getCommonFriends(User other){
         List<String> common = new ArrayList<>();
         common.addAll(other.friends);
         common.retainAll(this.friends);
         return common.size();
+    }
+
+    @Exclude
+    public String getFullName(){
+        return name + " " + lastname;
     }
 }

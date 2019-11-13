@@ -268,7 +268,7 @@ public class ProfileFragment extends Fragment {
         System.out.println("Setting up viewpager");
 
         adapter.addFragment(TimelineFragment.newInstance(profileOwner._key, false), "Muro");
-        adapter.addFragment(FriendsFragment.newInstance("", ""), "Amigos");
+        adapter.addFragment(FriendsFragment.newInstance(profileOwner._key, ""), "Amigos");
         adapter.addFragment(FriendsFragment.newInstance("", ""), "Amigos");
 
         System.out.println("********************************");

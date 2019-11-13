@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
         adapter.addFragment(TimelineFragment.newInstance("", true), "Timeline");
         adapter.addFragment(ProfileFragment.newInstance(myUser._key, true), "Profile");
-        adapter.addFragment(new FriendsFragment(), "Amigos");
+        adapter.addFragment(FriendsFragment.newInstance(myUser._key, ""), "Amigos");
         adapter.addFragment(new SearchFragment(), "Buscar");
         adapter.addFragment(new NotificationsFragment(), "Notificaciones");
         viewPager.setAdapter(adapter);

@@ -103,6 +103,7 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
 
         GlideApp.with(context /* context */)
                 .load(storageReference)
+                .circleCrop()
                 .into(profile);
     }
 
