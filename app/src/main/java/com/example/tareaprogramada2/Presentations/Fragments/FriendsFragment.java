@@ -106,7 +106,7 @@ public class FriendsFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         filterRow = view.findViewById(R.id.row_friends);
         filter = view.findViewById(R.id.radGroup_filters);
-        adapter =new FriendsAdapter (friendsCodes, getContext());
+        adapter = new FriendsAdapter (friendsCodes, getContext());
         recyclerView.setAdapter(adapter);
 
         filter.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
