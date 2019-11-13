@@ -1,9 +1,11 @@
 package com.example.tareaprogramada2.Presentations.Fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -60,6 +62,7 @@ public class ProfileFragment extends Fragment {
 
     private StorageReference storageReference;
     private DatabaseReference database;
+    private DatabaseReference ownerReference;
     private User profileOwner;
 
     private ImageView profilePicture;
@@ -67,6 +70,7 @@ public class ProfileFragment extends Fragment {
     private Button edit, logOut, sendRequest, removeFriend;
     private LinearLayout configLayout;
 
+    private Activity myActivity;
 
     public SectionsPageAdapter pagesAdapter;
 
@@ -110,6 +114,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onAttach(Context context){
         super.onAttach(context);
+        this.myActivity = getActivity();
 
         for (Fragment fragment : getChildFragmentManager().getFragments()) {
             //getSupportFragmentManager().beginTransaction().remove(fragment).commit();
@@ -120,13 +125,18 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDetach(){
+        super.onDetach();
+        this.myActivity = null;
+    }
+
 
     private void showOwnerWidgets(){
         configLayout.setVisibility(View.VISIBLE);
         removeFriend.setVisibility(View.GONE);
         sendRequest.setVisibility(View.GONE);
         message.setVisibility(View.GONE);
-
     }
 
     private void visitingProfile(){
@@ -135,18 +145,23 @@ public class ProfileFragment extends Fragment {
         sendRequest.setVisibility(View.GONE);
         message.setVisibility(View.GONE);
 
-        User myUser = Session.instance.currentUser;
-        if (myUser.friends.contains(profileOwner._key)){
-            removeFriend.setVisibility(View.VISIBLE);
-            return;
-        }
+
 
         database = FirebaseDatabase.getInstance().getReference("request");
-        database.addListenerForSingleValueEvent(new ValueEventListener() {
+        database.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
+                removeFriend.setVisibility(View.GONE);
+                sendRequest.setVisibility(View.GONE);
+                message.setVisibility(View.GONE);
+
+                User myUser = Session.instance.currentUser;
+                if (myUser.friends.contains(profileOwner._key)){
+                    removeFriend.setVisibility(View.VISIBLE);
+                    return;
+                }
 
                 for (DataSnapshot ds : dataSnapshot.getChildren()){
                     FriendshipRequest request = ds.getValue(FriendshipRequest.class);
@@ -186,34 +201,30 @@ public class ProfileFragment extends Fragment {
         logOut = root.findViewById(R.id.btn_logOut);// btn_logOut
         configLayout = view.findViewById(R.id.layout_config);
 
-        if (this.isOwner){
-            setupComponents(Session.instance.currentUser, view);
-            showOwnerWidgets();
-        } else {
-            DatabaseReference usersReference = FirebaseDatabase.getInstance().getReference("users").child(user_id);
-            usersReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    // This method is called once with the initial value and again
-                    // whenever data at this location is updated.
-                    User myUser = dataSnapshot.getValue(User.class);
-                    setupComponents(myUser, view);
-                    visitingProfile();
-                }
+        ownerReference = FirebaseDatabase.getInstance().getReference("users").child(user_id);
+        ownerReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User myUser = dataSnapshot.getValue(User.class);
+                profileOwner = myUser;
+                setupComponents(myUser, view);
+            }
 
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-                    Log.w("LOGIN", "Failed to read value.", error.toException());
-                    System.out.println("LOGIN" + "Failed to read value." + error.toException());
-                }
-            });
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
     }
 
-    public void setupComponents(User myUser, View view) {
-        profileOwner = myUser;
+    private void setupComponents(User myUser, View view) {
+        if (this.isOwner){
+            showOwnerWidgets();
+        } else {
+            visitingProfile();
+        }
 
         if (!profileOwner.profilePic.equals("")){
             storageReference = FirebaseStorage.getInstance().getReference(profileOwner._key).child(profileOwner.profilePic);
@@ -222,19 +233,20 @@ public class ProfileFragment extends Fragment {
         }
 
 
-        GlideApp.with(this /* context */)
-                .load(storageReference)
-                .circleCrop()
-                .into(profilePicture);
+        if (this.myActivity != null){
+            GlideApp.with(this /* context */)
+                    .load(storageReference)
+                    .circleCrop()
+                    .into(profilePicture);
+        }
 
-        name.setText(myUser.name + " " + myUser.lastname);
+        name.setText(myUser.getFullName());
 
         ViewPager viewPager = view.findViewById(R.id.pages_profile);
         setupViewPager(viewPager);
 
         TabLayout tabLayout = view.findViewById(R.id.tabs_profile);
         tabLayout.setupWithViewPager(viewPager);
-
 
         edit.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), EditInfoActivity.class);
@@ -258,20 +270,22 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        removeFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeFriend();
+            }
+        });
+
     }
 
     public void setupViewPager(ViewPager viewPager){
-
         SectionsPageAdapter adapter = new SectionsPageAdapter(getFragmentManager());
-
-        System.out.println("********************************");
-        System.out.println("Setting up viewpager");
 
         adapter.addFragment(TimelineFragment.newInstance(profileOwner._key, false), "Muro");
         adapter.addFragment(FriendsFragment.newInstance(profileOwner._key, ""), "Amigos");
         adapter.addFragment(InformationFragment.newInstance("", ""), "Information");
 
-        System.out.println("********************************");
         viewPager.setAdapter(adapter);
     }
 
@@ -292,6 +306,18 @@ public class ProfileFragment extends Fragment {
         message.setVisibility(View.VISIBLE);
     }
 
+    private void removeFriend(){
+        User myUser = Session.instance.currentUser;
+
+        myUser.friends.remove(profileOwner._key);
+        profileOwner.friends.remove(myUser._key);
+
+        database = FirebaseDatabase.getInstance().getReference("users").child(myUser._key);
+        database.setValue(myUser.toMap());
+
+        database = FirebaseDatabase.getInstance().getReference("users").child(profileOwner._key);
+        database.setValue(profileOwner.toMap());
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

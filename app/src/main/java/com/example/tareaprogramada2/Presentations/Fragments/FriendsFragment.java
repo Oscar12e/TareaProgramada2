@@ -120,7 +120,6 @@ public class FriendsFragment extends Fragment {
             }
         });
 
-
         if (this.isOwner){
             filterRow.setVisibility(View.GONE);
         } else {
@@ -203,7 +202,8 @@ public class FriendsFragment extends Fragment {
     private void updateAdpaterData(List<String> data){
         friendsCodes.clear();
         System.out.println("Modifing this");
-        friendsCodes.addAll(data);
+        if (data != null)
+            friendsCodes.addAll(data);
         adapter.notifyDataSetChanged();
     }
 }
